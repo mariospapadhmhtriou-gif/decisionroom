@@ -6,17 +6,19 @@
 ## What was built
 
 A private decision workspace on DeepSpace. A signed-in user creates a decision (question + constraints such as a
-budget) and sets three weighted criteria (0-10). They can ask AI to find options: the server searches the web and
+budget). AI turns that text into three criteria with weights (0-10) and keeps them in step as the text changes,
+until the user edits them; the user can always change criteria and weights. They can ask AI to find options: the server searches the web and
 AI proposes three real options with a 1-5 score and a reason per criterion, citing results, which the user reviews
 before applying. Options and scores stay editable, and the app shows a deterministic weighted ranking with explicit
-ties. They can also search the web, choose which results to save as evidence on a specific option (with notes),
+ties. Evidence is optional: they can do their own research, search the web, choose which results to save as evidence on a specific option (with notes),
 ask AI to draft an editable brief that cites only those saved sources, and email the final brief to their own
 address after previewing exactly what will be sent. Everything persists to an owner-private record.
 
 ## DeepSpace integrations actually used (each exercised on the live app)
 
 1. **Exa web search** (`exa/search`): evidence search and the AI option finder's research step.
-2. **Anthropic** (`anthropic/chat-completion`, `claude-haiku-5-5`): suggests options with scores from search results,
+2. **Anthropic** (`anthropic/chat-completion`, `claude-haiku-5-5`): suggests criteria and weights from the question,
+   suggests options with scores from search results,
    and drafts the brief's prose as structured JSON. The app computes the ranking and filters citations to known IDs.
 3. **Email** (`email/send`): sends the saved brief to the signed-in user's own address.
 
@@ -26,7 +28,8 @@ server-enforced `read: 'own'` permissions, realtime `useQuery`, server actions, 
 ## Main tradeoff
 
 I let AI do the legwork but not the deciding. AI can research and propose options with starting scores, but
-nothing is applied until the user reviews it, every score stays editable, the priorities are always the user's,
+nothing is applied until the user reviews it, every score stays editable, AI-suggested criteria and weights never
+overwrite the user's own edits,
 and the ranking is a fixed formula the user can check. AI also explains the tradeoffs in the brief.
 
 A second, technical tradeoff: each decision is one validated JSON record with a revision number. That makes
@@ -46,14 +49,14 @@ logs: AI briefs failed because the model's thinking used up the token budget and
 **Automated (run by the agent, all passing at the final commit):**
 - `npx tsc --noEmit`, no errors.
 - `npx eslint src`, no findings.
-- `npx vitest run`, 35 tests: scoring (known average, priorities changing the winner, all-zero weights, ties,
+- `npx vitest run`, 43 tests: scoring (known average, priorities changing the winner, all-zero weights, ties,
   excluded criteria, no input mutation), document validation, corrupted data, reference-ID filtering, HTML
   escaping, email composition, prompt framing of untrusted source text, option-finder clamping and source
-  filtering, dash removal.
+  filtering, automatic criteria (when to regenerate, respecting user edits, clamping), dash removal.
 - `npx vite build`, succeeds.
 - `npx deepspace test run`, scaffold smoke + API suites, 8/8 (local dev server).
 - `npx playwright test -c tests/playwright.live.config.ts`, **against the live app** with two DeepSpace test
-  accounts: user B cannot see or open user A's decision; `saveDecision`, `generateBrief`, `suggestOptions`, `searchEvidence`,
+  accounts: user B cannot see or open user A's decision; `saveDecision`, `generateBrief`, `suggestOptions`, `suggestCriteria`, `searchEvidence`,
   `emailBrief`, `deleteDecision` on A's id with B's token all return `not_found`; no token / forged token → 401;
   stale revision → `conflict`; score 9, weight 11 and a `javascript:` evidence URL → `invalid`.
 
@@ -65,7 +68,9 @@ up to date again after reverting; email preview showed the sign-in address; one 
 a second identical send was refused as a duplicate; AI failure kept the page usable and showed a clear error;
 narrow-screen (390 px) layout reviewed with no horizontal overflow. AI option finder: for "Which noise cancelling
 headphones should I buy?" with a $200 budget it proposed three real models with reasons and sources; applying
-them filled the comparison and evidence, and the result persisted after reload. The logo returns to the main page.
+them filled the comparison and evidence, and the result persisted after reload. The logo returns to the main page. Automatic criteria: typing "Which used car should I buy for my first car?" with
+a budget produced Affordability 9, Insurance cost 8, City driving 6; adding "safety and reliability" regenerated them;
+after a manual weight edit, a further change kept the user's criteria and offered "Update from question".
 
 **Applicant's own verification:** _not yet done, to be completed by the applicant before submitting._
 Suggested checks:
@@ -75,6 +80,7 @@ Suggested checks:
 - [ ] Open the same decision in two tabs, edit both, and confirm the conflict prompt appears.
 - [ ] Keyboard-only pass: Tab through the comparison, evidence and email dialog; focus stays visible.
 - [ ] Read one AI brief critically and click its sources.
+- [ ] Type a new question and watch the criteria and weights fill in; then edit one and confirm it is kept.
 - [ ] Run the AI option finder on a decision of your own and check the suggested scores against the sources.
 
 ## Unfinished work and next steps

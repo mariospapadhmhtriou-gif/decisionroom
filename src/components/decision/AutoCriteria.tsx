@@ -98,8 +98,8 @@ export function CriteriaBar({
   let message: string
   if (working) message = 'Updating criteria and weights from your question…'
   else if (error) message = error
-  else if (fromAi) message = 'Criteria and weights were set by AI from your question. Change anything you like; your edits are kept.'
-  else if (outOfDate) message = 'Your question changed since you set these criteria.'
+  else if (fromAi) message = 'Criteria and weights were set by AI from your question and constraints. Change anything you like; your edits are kept.'
+  else if (outOfDate) message = 'Your question or constraints changed since you set these criteria.'
   else if (tooShort) message = 'Write your question and the criteria and weights will fill in automatically.'
   else message = 'Criteria and weights set by you.'
 

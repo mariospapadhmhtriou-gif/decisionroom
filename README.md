@@ -12,14 +12,16 @@ Uncertain choice → explicit priorities → evidence-backed comparison → insp
 
 1. Sign in (DeepSpace auth: GitHub or Google).
 2. Create a decision (blank, or the sample with **fictional** watches and **made-up** scores).
-3. Write the question and constraints (for example a budget), name three criteria and set their weights (0-10).
+3. Write the question and constraints (for example a budget). AI picks three criteria and weights (0-10) from them
+   automatically and updates them when you change the text, after a short pause. Edit any criterion or weight and
+   automatic updates stop; an **Update from question** button appears instead, so your choices are never overwritten.
 4. Optional: **Find options with AI.** The server searches the web from the saved question and constraints, and
    AI proposes three real options with a 1-5 score and a reason per criterion, citing search results. You see
    how they would rank under your weights, then choose **Use these options** or **Discard**. Accepting replaces
    the options, scores and evidence; question, constraints and weights stay. Scores remain editable.
 5. Or enter options and scores yourself. The ranking updates instantly: deterministic arithmetic, explicit ties,
    and no ranking when all weights are 0.
-6. Search the web (Exa), pick the results you trust, save them to an option, add notes, remove them.
+6. Optional own research: search the web (Exa), pick the results you trust, save them to an option, add notes, remove them.
 7. Draft a brief with AI from the **saved** decision. It cites only saved source IDs (S1, S2…). Edit it freely;
    it is marked out of date when inputs change.
 8. Preview the exact email, then explicitly send it to your own sign-in address.
@@ -45,6 +47,7 @@ or changes scores on its own; the brief's ranking block is inserted by the app.
 | Domain model, validation schema, brief/email composition | `src/lib/decision.ts` |
 | AI prompts (untrusted-data framing) | `src/lib/brief-prompt.ts`, `src/lib/suggest.ts` |
 | AI option finder: query, output clamping, apply (tested) | `src/lib/suggest.ts` |
+| AI criteria and weights: when to regenerate, clamping (tested) | `src/lib/criteria.ts`, `src/components/decision/AutoCriteria.tsx` |
 | Server actions (the only write path) | `src/actions/index.ts` |
 | Collection schemas + permissions | `src/schemas/decisions-schema.ts` |
 | Load/save hook (debounced autosave, optimistic concurrency) | `src/lib/useDecision.ts` |
@@ -64,7 +67,7 @@ collection with server-enforced RBAC (`read: 'own'`), realtime `useQuery` subscr
   (3) re-validates the entire document with zod (score/weight ranges, text limits, http(s)-only URLs, unique IDs).
 - Saves use optimistic concurrency: a save with a stale `baseRevision` is refused with `conflict` and the UI
   asks which version to keep. Nothing is silently overwritten.
-- `usage_events` (server-only) backs per-user limits: 30 searches/hour, 10 option searches/hour, 10 briefs/hour, 5 emails/day, and
+- `usage_events` (server-only) backs per-user limits: 30 searches/hour, 10 option searches/hour, 40 criteria suggestions/hour, 10 briefs/hour, 5 emails/day, and
   duplicate-email protection.
 
 ### Integrations (all called server-side, sign-in required)
@@ -72,7 +75,7 @@ collection with server-enforced RBAC (`read: 'own'`), realtime `useQuery` subscr
 | Integration | Endpoint | Used for |
 |---|---|---|
 | Exa web search | `exa/search` | Evidence search (6 results) and the option finder (8 results); query ≤ 200 chars |
-| Anthropic | `anthropic/chat-completion` (`claude-haiku-5-5`) | Suggesting options and scores; drafting the brief's prose as JSON |
+| Anthropic | `anthropic/chat-completion` (`claude-haiku-5-5`) | Suggesting criteria and weights, options and scores; drafting the brief's prose as JSON |
 | Email (Resend via DeepSpace) | `email/send` | Sending the saved brief to the caller's own address |
 
 AI safety: the model has no tools; user text and snippets are passed inside a JSON data block that the system
