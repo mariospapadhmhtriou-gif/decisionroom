@@ -18,6 +18,7 @@ import {
   type DecisionDoc,
   type Evidence,
 } from './decision'
+import { scoresKey } from './autoscore'
 
 export interface SearchHit {
   id: string // R1, R2...
@@ -131,11 +132,14 @@ export function applySuggestion(doc: DecisionDoc, s: Suggestion, now = new Date(
       })
     }
   })
-  return {
+  const next: DecisionDoc = {
     ...doc,
     options: s.options.map((o) => ({ name: o.name, scores: [...o.scores] })),
     evidence,
     sample: false,
     aiSuggestedAt: now,
+    scoresManual: false,
   }
+  // These scores come from research, so they count as AI-owned and current.
+  return { ...next, scoresFrom: scoresKey(next) }
 }

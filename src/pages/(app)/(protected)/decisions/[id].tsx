@@ -14,6 +14,8 @@ import { Evidence } from '@/components/decision/Evidence'
 import { Brief } from '@/components/decision/Brief'
 import { OptionFinder } from '@/components/decision/OptionFinder'
 import { CriteriaBar, useAutoCriteria } from '@/components/decision/AutoCriteria'
+import { ScoresBar, useAutoScores } from '@/components/decision/AutoScores'
+import { needsAutoCriteria } from '@/lib/criteria'
 import { Chip, fieldClass } from '@/components/decision/controls'
 
 export default function DecisionPage() {
@@ -21,6 +23,8 @@ export default function DecisionPage() {
   const navigate = useNavigate()
   const { doc, status, error, savedAt, update, flush, retry, resolveConflict, docRef } = useDecision(id)
   const autoCriteria = useAutoCriteria(id, doc, docRef, update, flush)
+  // Score only after criteria have settled, so scores match the final criteria.
+  const autoScores = useAutoScores(id, doc, docRef, update, flush, autoCriteria.working || (!!doc && needsAutoCriteria(doc)))
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -139,7 +143,13 @@ export default function DecisionPage() {
       </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <Comparison doc={doc} ranking={ranking} update={update} criteriaBar={<CriteriaBar doc={doc} {...autoCriteria} />} />
+        <Comparison doc={doc} ranking={ranking} update={update} criteriaBar={
+            <>
+              <CriteriaBar doc={doc} {...autoCriteria} />
+              <ScoresBar doc={doc} {...autoScores} />
+            </>
+          }
+        />
         <div className="lg:sticky lg:top-4 lg:self-start">
           <Result doc={doc} ranking={ranking} />
         </div>

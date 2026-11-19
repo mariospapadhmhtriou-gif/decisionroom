@@ -45,6 +45,7 @@ import {
   normalizeSuggestion,
   type SearchHit,
 } from '../lib/suggest'
+import { SCORES_SYSTEM_PROMPT, buildScoresUserMessage, normalizeScores, readyToScore, scoresKey } from '../lib/autoscore'
 import { CRITERIA_SYSTEM_PROMPT, MIN_QUESTION_FOR_CRITERIA, buildCriteriaUserMessage, normalizeCriteria, promptKey } from '../lib/criteria'
 
 type Result = ActionResult<unknown>
@@ -56,6 +57,7 @@ const RATE_LIMITS = {
   brief: { max: 10, windowMs: 60 * 60 * 1000, label: '10 brief generations per hour' },
   suggest: { max: 10, windowMs: 60 * 60 * 1000, label: '10 option searches per hour' },
   criteria: { max: 40, windowMs: 60 * 60 * 1000, label: '40 criteria suggestions per hour' },
+  scores: { max: 40, windowMs: 60 * 60 * 1000, label: '40 automatic scorings per hour' },
   email: { max: 5, windowMs: 24 * 60 * 60 * 1000, label: '5 emails per day' },
 } as const
 const EMAIL_DUPLICATE_WINDOW_MS = 10 * 60 * 1000
@@ -219,6 +221,45 @@ export const actions: Record<string, ActionHandler<Env>> = {
       return fail('The AI could not suggest criteria this time. Your criteria were not changed.', 'bad_output')
     }
     return { success: true, data: { criteria, key: promptKey(doc) } }
+  },
+
+  /**
+   * Score the three options on the three criteria from the SAVED decision,
+   * using the model's general knowledge (no web search). Returns scores with
+   * the fingerprint they were based on; the client applies them only if
+   * nothing changed meanwhile and the user has not set scores by hand.
+   */
+  suggestScores: async ({ userId, params, tools }) => {
+    const owned = await loadOwned(tools, userId, params.id)
+    if (!owned.ok) return owned.res
+    const doc = owned.doc
+    if (!readyToScore(doc)) return fail('Name your question, three options and three criteria first.', 'invalid')
+    const limited = await checkRate(tools, userId, 'scores')
+    if (limited) return limited
+    const res = await tools.integration<Record<string, unknown>>('anthropic/chat-completion', {
+      model: BRIEF_MODEL,
+      max_tokens: 4000,
+      temperature: 0.2,
+      system: SCORES_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildScoresUserMessage(doc) }],
+    })
+    await logEvent(tools, userId, 'scores', owned.id)
+    if (!res.success) {
+      return fail(res.code === 'insufficient_credits' ? 'AI is unavailable: the app is out of credits.' : `AI request failed: ${res.error}`, res.code)
+    }
+    const body = res.data as { content?: Array<{ type?: string; text?: string }>; stop_reason?: string }
+    const text = (Array.isArray(body.content) ? body.content : []).filter((c) => c.type === 'text').map((c) => c.text ?? '').join('')
+    let scored = null
+    try {
+      scored = normalizeScores(extractJsonObject(text))
+    } catch {
+      scored = null
+    }
+    if (!scored) {
+      console.warn(`[suggestScores] unusable model output stop=${body.stop_reason} textLen=${text.length}`)
+      return fail('The AI could not score the options this time. Your scores were not changed.', 'bad_output')
+    }
+    return { success: true, data: { ...scored, key: scoresKey(doc) } }
   },
 
   /**

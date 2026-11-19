@@ -24,6 +24,7 @@ const setCriterion = (j: number, patch: Partial<DecisionDoc['criteria'][number]>
 })
 const setScore = (i: number, j: number, n: number) => (d: DecisionDoc) => ({
   ...d,
+  scoresManual: true,
   options: d.options.map((o, k) =>
     k === i ? { ...o, scores: o.scores.map((s, m) => (m === j ? n : s)) } : o,
   ),
