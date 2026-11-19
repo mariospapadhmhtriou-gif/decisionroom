@@ -36,6 +36,14 @@ import {
   type DecisionRecordData,
 } from '../lib/decision'
 import { BRIEF_MODEL, BRIEF_SYSTEM_PROMPT, buildBriefUserMessage } from '../lib/brief-prompt'
+import {
+  SUGGEST_SEARCH_RESULTS,
+  SUGGEST_SYSTEM_PROMPT,
+  buildSuggestQuery,
+  buildSuggestUserMessage,
+  normalizeSuggestion,
+  type SearchHit,
+} from '../lib/suggest'
 
 type Result = ActionResult<unknown>
 const fail = (error: string, code?: string): Result => ({ success: false, error, code })
@@ -44,6 +52,7 @@ const MAX_DOC_BYTES = 64_000
 const RATE_LIMITS = {
   search: { max: 30, windowMs: 60 * 60 * 1000, label: '30 searches per hour' },
   brief: { max: 10, windowMs: 60 * 60 * 1000, label: '10 brief generations per hour' },
+  suggest: { max: 10, windowMs: 60 * 60 * 1000, label: '10 option searches per hour' },
   email: { max: 5, windowMs: 24 * 60 * 60 * 1000, label: '5 emails per day' },
 } as const
 const EMAIL_DUPLICATE_WINDOW_MS = 10 * 60 * 1000
@@ -168,6 +177,73 @@ export const actions: Record<string, ActionHandler<Env>> = {
     const removed = await tools.remove('decisions', owned.id)
     if (!removed.success) return fail('Could not delete the decision.')
     return { success: true, data: { id: owned.id } }
+  },
+
+  /**
+   * AI option finder: search the web from the SAVED question and constraints,
+   * then ask the model for three options with suggested scores per criterion.
+   * Returns a proposal only; the user reviews it and applies it via saveDecision.
+   */
+  suggestOptions: async ({ userId, params, tools }) => {
+    const owned = await loadOwned(tools, userId, params.id)
+    if (!owned.ok) return owned.res
+    const doc = owned.doc
+    if (doc.question.trim().length < 5) return fail('Write your decision question first, for example "Which laptop should I buy?".', 'invalid')
+    if (!rankDecision(doc).valid) return fail('Give at least one criterion a weight above zero first.', 'invalid')
+    const limited = await checkRate(tools, userId, 'suggest')
+    if (limited) return limited
+
+    const query = buildSuggestQuery(doc)
+    const search = await tools.integration<{ results?: Array<Record<string, unknown>> }>('exa/search', {
+      query,
+      numResults: SUGGEST_SEARCH_RESULTS,
+      type: 'auto',
+      contents: { highlights: { numSentences: 3, highlightsPerUrl: 2 } },
+    })
+    await logEvent(tools, userId, 'suggest', query)
+    if (!search.success) {
+      return fail(search.code === 'insufficient_credits' ? 'Search is unavailable: the app is out of credits.' : `Search failed: ${search.error}`, search.code)
+    }
+    const hits: SearchHit[] = (search.data.results ?? [])
+      .map((r) => {
+        const url = typeof r.url === 'string' ? r.url : ''
+        const highlights = Array.isArray(r.highlights) ? r.highlights : []
+        return {
+          id: '',
+          title: clip(r.title, LIMITS.evidenceTitle) || url,
+          url,
+          snippet: clip(plainSnippet(highlights.join(' ') || r.text || ''), LIMITS.evidenceSnippet),
+        }
+      })
+      .filter((h) => h.url.length <= LIMITS.evidenceUrl && isSafeHttpUrl(h.url))
+      .slice(0, SUGGEST_SEARCH_RESULTS)
+      .map((h, i) => ({ ...h, id: `R${i + 1}` }))
+    if (hits.length === 0) return fail('The web search found nothing for this question. Try rewording the question or constraints.', 'no_results')
+
+    const res = await tools.integration<Record<string, unknown>>('anthropic/chat-completion', {
+      model: BRIEF_MODEL,
+      max_tokens: 6000,
+      temperature: 0.2,
+      system: SUGGEST_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildSuggestUserMessage(doc, hits) }],
+    })
+    if (!res.success) {
+      return fail(res.code === 'insufficient_credits' ? 'AI is unavailable: the app is out of credits.' : `AI request failed: ${res.error}`, res.code)
+    }
+    const body = res.data as { content?: Array<{ type?: string; text?: string }>; stop_reason?: string }
+    const blocks = Array.isArray(body.content) ? body.content : []
+    const text = blocks.filter((c) => c.type === 'text').map((c) => c.text ?? '').join('')
+    let suggestion = null
+    try {
+      suggestion = normalizeSuggestion(extractJsonObject(text), hits, query)
+    } catch {
+      suggestion = null
+    }
+    if (!suggestion) {
+      console.warn(`[suggestOptions] unusable model output stop=${body.stop_reason} textLen=${text.length}`)
+      return fail('The AI could not produce three usable options. Nothing was changed; try again or adjust your constraints.', 'bad_output')
+    }
+    return { success: true, data: { suggestion } }
   },
 
   /** Web search for evidence. Results are returned, not saved, the user picks. */

@@ -63,7 +63,7 @@ export function Result({ doc, ranking }: { doc: DecisionDoc; ranking: Ranking })
         <summary className="cursor-pointer text-muted-foreground hover:text-foreground">How this is calculated</summary>
         <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
           For each option: sum of (score × weight) ÷ sum of weights. A weight of 0 leaves that criterion out.
-          The result is a preference score from 1 to 5, not a probability or an objective rating. The AI never changes it.
+          The result is a preference score from 1 to 5, not a probability or an objective rating. AI can suggest starting scores when you ask, but the ranking always comes from this formula.
         </p>
       </details>
     </section>

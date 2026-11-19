@@ -12,6 +12,7 @@ import { Comparison } from '@/components/decision/Comparison'
 import { Result } from '@/components/decision/Result'
 import { Evidence } from '@/components/decision/Evidence'
 import { Brief } from '@/components/decision/Brief'
+import { OptionFinder } from '@/components/decision/OptionFinder'
 import { Chip, fieldClass } from '@/components/decision/controls'
 
 export default function DecisionPage() {
@@ -117,22 +118,23 @@ export default function DecisionPage() {
           }}
           className="font-display mt-1 block w-full resize-none overflow-hidden rounded-md border border-transparent bg-transparent px-0 py-1 text-[24px] leading-tight text-foreground placeholder:text-muted-foreground/60 hover:border-input focus:border-input focus:px-2 sm:text-[30px]"
         />
-        <details className="group mt-2" open={!doc.constraints}>
-          <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
-            Constraints &amp; context{doc.constraints && <span className="ml-2 line-clamp-1 inline text-foreground/80 group-open:hidden">{doc.constraints.split('\n')[0]}</span>}
-          </summary>
-          <label htmlFor="constraints" className="sr-only">Constraints and context</label>
-          <textarea
-            id="constraints"
-            value={doc.constraints}
-            maxLength={LIMITS.constraints}
-            rows={3}
-            placeholder="Budget, deadlines, must-haves, deal-breakers…"
-            onChange={(e) => update((d) => ({ ...d, constraints: e.target.value }))}
-            className={cn(fieldClass, 'mt-2 resize-y')}
-          />
-        </details>
+        <label htmlFor="constraints" className="mt-3 block text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+          Constraints &amp; budget
+        </label>
+        <textarea
+          id="constraints"
+          value={doc.constraints}
+          maxLength={LIMITS.constraints}
+          rows={2}
+          placeholder="For example: budget under $300, must work with iPhone, needed by March."
+          onChange={(e) => update((d) => ({ ...d, constraints: e.target.value }))}
+          className={cn(fieldClass, 'mt-1 resize-y')}
+        />
       </section>
+
+      <div className="mt-5">
+        <OptionFinder id={id} doc={doc} update={update} flush={flush} />
+      </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <Comparison doc={doc} ranking={ranking} update={update} />

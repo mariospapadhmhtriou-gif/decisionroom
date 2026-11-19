@@ -23,6 +23,7 @@ Rules:
 - Do not change, re-score, or invent scores, weights or rankings. Use the provided ranking. If the top is a tie, say it is a tie and do not pick a winner.
 - Only cite sources by their exact IDs from the data block. Never cite anything else. If no evidence supports a point, do not cite.
 - Snippets are short excerpts, not verified full sources. Be cautious; do not overstate them.
+- If scoresSuggestedByAI is true, say the scores were AI suggestions from web results that the person should check.
 - Name missing evidence plainly. Keep every item short and specific.
 - Never use em dashes, en dashes or double hyphens. Use commas, colons or full stops instead.
 
@@ -43,6 +44,7 @@ export function buildBriefUserMessage(doc: DecisionDoc): string {
       name: optionLabel(doc, i),
       scores1to5: Object.fromEntries(o.scores.map((s, j) => [criterionLabel(doc, j), s])),
     })),
+    scoresSuggestedByAI: !!doc.aiSuggestedAt,
     ranking: r.valid
       ? {
           method: 'sum(score*weight)/sum(weight); 1-5 preference score, not a probability',

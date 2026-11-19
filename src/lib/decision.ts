@@ -81,6 +81,8 @@ export const decisionDocSchema = z
     evidence: z.array(evidenceSchema).max(LIMITS.evidence),
     brief: briefSchema.nullable(),
     sample: z.boolean(),
+    /** Set when the options and scores came from the AI option finder. */
+    aiSuggestedAt: z.string().max(40).nullable().optional(),
   })
   .refine((d) => new Set(d.evidence.map((e) => e.id)).size === d.evidence.length, {
     message: 'Evidence IDs must be unique',
