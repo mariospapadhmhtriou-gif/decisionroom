@@ -225,7 +225,7 @@ export const actions: Record<string, ActionHandler<Env>> = {
       'anthropic/chat-completion',
       {
         model: BRIEF_MODEL,
-        max_tokens: 1800,
+        max_tokens: 6000,
         temperature: 0.2,
         system: BRIEF_SYSTEM_PROMPT,
         messages: [{ role: 'user', content: buildBriefUserMessage(doc) }],
@@ -253,7 +253,12 @@ export const actions: Record<string, ActionHandler<Env>> = {
         `[generateBrief] unusable model output stage=${stage} stop=${body.stop_reason} ` +
           `blocks=${blocks.map((b) => b.type).join(',')} textLen=${text.length} keys=${Object.keys(res.data ?? {}).join(',')}`,
       )
-      return fail('The AI response was not in the expected format. Your existing brief was kept; try again.', 'bad_output')
+      return fail(
+        body.stop_reason === 'max_tokens'
+          ? 'The AI response was cut off before it finished. Your existing brief was kept; try again.'
+          : 'The AI response was not in the expected format. Your existing brief was kept; try again.',
+        'bad_output',
+      )
     }
     const { kept, dropped } = validateReferences(ai, doc.evidence)
     const brief: Brief = {
