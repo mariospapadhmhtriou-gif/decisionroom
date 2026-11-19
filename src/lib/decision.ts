@@ -233,6 +233,37 @@ export const aiBriefSchema = z.object({
 })
 export type AiBrief = z.infer<typeof aiBriefSchema>
 
+/**
+ * Coerce parsed model JSON into an AiBrief: keep only expected fields,
+ * clamp counts and lengths instead of failing on verbosity. Returns null
+ * only when the essential recommendation is missing.
+ */
+export function normalizeAiBrief(raw: unknown): AiBrief | null {
+  if (!raw || typeof raw !== 'object') return null
+  const o = raw as Record<string, unknown>
+  const str = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '')
+  const strs = (v: unknown, n: number, max: number) =>
+    Array.isArray(v) ? v.map((x) => str(x, max)).filter(Boolean).slice(0, n) : []
+  const recommendation = str(o.recommendation, 1200)
+  if (!recommendation) return null
+  const supportingPoints = Array.isArray(o.supportingPoints)
+    ? o.supportingPoints
+        .map((p) => {
+          const q = (p ?? {}) as Record<string, unknown>
+          return { sourceId: str(q.sourceId, 10), point: str(q.point, 500) }
+        })
+        .filter((p) => p.sourceId && p.point)
+        .slice(0, 12)
+    : []
+  return aiBriefSchema.parse({
+    recommendation,
+    tradeoffs: strs(o.tradeoffs, 8, 500),
+    supportingPoints,
+    missingEvidence: strs(o.missingEvidence, 8, 400),
+    openQuestions: strs(o.openQuestions, 8, 400),
+  })
+}
+
 /** Extract the first top-level JSON object from model text. */
 export function extractJsonObject(raw: string): unknown {
   const start = raw.indexOf('{')

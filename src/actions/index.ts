@@ -17,7 +17,7 @@ import { decodeJwtPayload } from 'deepspace/worker'
 import type { Env } from '../../worker'
 import {
   LIMITS,
-  aiBriefSchema,
+  normalizeAiBrief,
   blankDecision,
   composeBriefText,
   composeEmail,
@@ -30,6 +30,7 @@ import {
   rankDecision,
   sampleDecision,
   validateReferences,
+  type AiBrief,
   type Brief,
   type DecisionDoc,
   type DecisionRecordData,
@@ -89,6 +90,17 @@ async function checkRate(tools: ActionTools, userId: string, kind: keyof typeof 
 
 function logEvent(tools: ActionTools, userId: string, kind: string, detail = '') {
   return tools.create('usage_events', { ownerId: userId, kind, detail: detail.slice(0, 200), atMs: Date.now() })
+}
+
+/** Search highlights arrive as markdown fragments; keep plain prose. */
+function plainSnippet(value: unknown): string {
+  if (typeof value !== 'string') return ''
+  return value
+    .replace(/^\s*\.{3}\s*$/gm, ' ')
+    .replace(/^#{1,6}\s*/gm, '')
+    .replace(/#{2,6}\s*/g, '')
+    .replace(/[*_`]{1,3}/g, '')
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
 }
 
 function clip(value: unknown, max: number): string {
@@ -182,7 +194,7 @@ export const actions: Record<string, ActionHandler<Env>> = {
       .map((r) => {
         const url = typeof r.url === 'string' ? r.url : ''
         const highlights = Array.isArray(r.highlights) ? r.highlights : []
-        const snippet = clip(highlights[0] ?? r.text ?? '', LIMITS.evidenceSnippet)
+        const snippet = clip(plainSnippet(highlights[0] ?? r.text ?? ''), LIMITS.evidenceSnippet)
         return {
           title: clip(r.title, LIMITS.evidenceTitle) || url,
           url,
@@ -209,7 +221,7 @@ export const actions: Record<string, ActionHandler<Env>> = {
     const limited = await checkRate(tools, userId, 'brief')
     if (limited) return limited
 
-    const res = await tools.integration<{ content?: Array<{ type?: string; text?: string }> }>(
+    const res = await tools.integration<Record<string, unknown>>(
       'anthropic/chat-completion',
       {
         model: BRIEF_MODEL,
@@ -223,13 +235,24 @@ export const actions: Record<string, ActionHandler<Env>> = {
     if (!res.success) {
       return fail(res.code === 'insufficient_credits' ? 'AI is unavailable: the app is out of credits.' : `AI generation failed: ${res.error}`, res.code)
     }
-    const text = (res.data.content ?? []).filter((c) => c.type === 'text').map((c) => c.text ?? '').join('')
-    let ai
+    const body = res.data as { content?: Array<{ type?: string; text?: string }>; stop_reason?: string }
+    const blocks = Array.isArray(body.content) ? body.content : []
+    const text = blocks.filter((c) => c.type === 'text').map((c) => c.text ?? '').join('')
+    let ai: AiBrief | null = null
+    let stage = 'json'
     try {
-      const parsed = aiBriefSchema.safeParse(extractJsonObject(text))
-      if (!parsed.success) throw new Error('shape')
-      ai = parsed.data
+      const json = extractJsonObject(text)
+      stage = 'shape'
+      ai = normalizeAiBrief(json)
     } catch {
+      ai = null
+    }
+    if (!ai) {
+      // Diagnostics only — never log the model text or user content.
+      console.warn(
+        `[generateBrief] unusable model output stage=${stage} stop=${body.stop_reason} ` +
+          `blocks=${blocks.map((b) => b.type).join(',')} textLen=${text.length} keys=${Object.keys(res.data ?? {}).join(',')}`,
+      )
       return fail('The AI response was not in the expected format. Your existing brief was kept; try again.', 'bad_output')
     }
     const { kept, dropped } = validateReferences(ai, doc.evidence)
