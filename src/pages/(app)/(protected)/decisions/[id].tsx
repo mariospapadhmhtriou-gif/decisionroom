@@ -104,13 +104,18 @@ export default function DecisionPage() {
           </label>
           {doc.sample && <Chip>Sample · fictional data</Chip>}
         </div>
-        <input
+        <textarea
           id="question"
+          rows={1}
           value={doc.question}
           maxLength={LIMITS.question}
           placeholder="What are you deciding?"
-          onChange={(e) => update((d) => ({ ...d, question: e.target.value }))}
-          className="font-display mt-1 w-full rounded-md border border-transparent bg-transparent px-0 py-1 text-[26px] leading-tight text-foreground placeholder:text-muted-foreground/60 hover:border-input focus:border-input focus:px-2 sm:text-[30px]"
+          ref={autoGrow}
+          onChange={(e) => {
+            autoGrow(e.target)
+            update((d) => ({ ...d, question: e.target.value.replace(/\s*\n\s*/g, ' ') }))
+          }}
+          className="font-display mt-1 block w-full resize-none overflow-hidden rounded-md border border-transparent bg-transparent px-0 py-1 text-[24px] leading-tight text-foreground placeholder:text-muted-foreground/60 hover:border-input focus:border-input focus:px-2 sm:text-[30px]"
         />
         <details className="group mt-2" open={!doc.constraints}>
           <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
@@ -153,6 +158,13 @@ export default function DecisionPage() {
       />
     </div>
   )
+}
+
+/** Grow a textarea to fit its content (long questions wrap instead of clipping). */
+function autoGrow(el: HTMLTextAreaElement | null) {
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
 }
 
 function SaveIndicator({ status, savedAt }: { status: SaveStatus; savedAt: Date | null }) {
