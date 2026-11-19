@@ -1,49 +1,63 @@
 /**
- * Landing page — a STATIC page.
- *
- * It lives at the top level of src/pages/ (not under (app)/), so it renders
- * with no DeepSpace providers: no auth session fetch, no records WebSocket.
- * That makes it cheap to serve and safe for logged-out / crawler traffic.
- *
- * Need live data or auth here? Move this file to src/pages/(app)/index.tsx
- * and it becomes a dynamic page. Conversely, any page you want to keep static
- * (marketing, docs, legal) belongs at this top level.
- *
- * Top-level pages are also prerendered to static HTML at build
- * (prerender.ts, via vite.config.ts) so crawlers read real content.
- * Keep them renderable without a browser: no window/document during render,
- * prose in HTML text, reveal animations in CSS keyframes rather than JS-driven
- * initial states. `<Seo>` comes first and reads src/seo.ts.
+ * Landing page — STATIC (no auth fetch, no socket), prerendered at build.
+ * Deliberately compact: it explains the workflow and gets out of the way.
  */
 
 import { Link } from 'react-router-dom'
 import { Seo } from '../components/Seo'
-import { APP_NAME } from '../constants'
 import { seo } from '../seo'
+
+const steps = [
+  ['Make priorities explicit', 'Three options, three criteria, weights from 0 to 10, scores from 1 to 5.'],
+  ['See a ranking you can check', 'A plain weighted average — ties stay ties, and nothing is hidden.'],
+  ['Save evidence you chose', 'Search the web, keep the results you trust, attach them to an option.'],
+  ['Get an editable brief', 'AI drafts the reasoning from your saved inputs and cites only your sources. Email it to yourself.'],
+]
 
 export default function Landing() {
   return (
     <>
       <Seo {...seo} path="/" />
-      <div
-        data-testid="static-landing"
-        className="flex min-h-screen flex-col items-center justify-center px-6 text-center"
-      >
-        <p className="mb-3 text-sm uppercase tracking-widest text-muted-foreground">{APP_NAME}</p>
-        <h1 className="mb-4 max-w-2xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          A DeepSpace app with a static front door
-        </h1>
-        <p className="mb-8 max-w-md text-muted-foreground">
-          This landing page ships no auth call and no realtime connection — it's a
-          plain static page. The live app, with sign-in and synced data, lives
-          behind the link below.
-        </p>
-        <Link
-          to="/home"
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-        >
-          Enter the app
-        </Link>
+      <div data-testid="static-landing" className="min-h-screen bg-background">
+        <header className="border-b border-border bg-[color:var(--color-shell)]">
+          <div className="mx-auto flex h-12 max-w-5xl items-center justify-between px-4 sm:px-6">
+            <span className="flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground">
+              <span aria-hidden className="font-display grid size-6 place-items-center rounded-md bg-primary text-[13px] text-primary-foreground">D</span>
+              DecisionRoom
+            </span>
+            <Link to="/decisions" className="text-sm text-muted-foreground hover:text-foreground">Sign in</Link>
+          </div>
+        </header>
+        <main className="mx-auto max-w-5xl px-4 py-14 sm:px-6 sm:py-20">
+          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-primary">Decision workspace</p>
+          <h1 className="font-display mt-3 max-w-2xl text-3xl leading-tight text-foreground sm:text-4xl">
+            Turn an uncertain choice into a brief you can explain.
+          </h1>
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+            Compare options against priorities you set, keep the evidence you found, and get a draft brief that shows its
+            working — the ranking is arithmetic you control, not an AI verdict.
+          </p>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Link
+              to="/decisions"
+              className="inline-flex h-10 items-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              Open your decisions
+            </Link>
+          </div>
+          <ol className="mt-14 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
+            {steps.map(([title, body], i) => (
+              <li key={title} className="bg-card p-5">
+                <p className="tabular text-xs text-primary">0{i + 1}</p>
+                <p className="mt-1 font-medium text-foreground">{title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{body}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-6 text-xs text-muted-foreground">
+            Decisions are private to your account. Search results and AI drafts can be wrong — check the sources.
+          </p>
+        </main>
       </div>
     </>
   )

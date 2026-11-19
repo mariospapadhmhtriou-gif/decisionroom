@@ -69,9 +69,10 @@ export default function Navigation() {
 
   return (
     <>
-      <nav data-testid="app-navigation" className="border-b border-border bg-background">
-        <div className="mx-auto flex h-12 max-w-7xl items-center gap-4 px-4">
-          <Link to="/home" className="text-sm font-semibold text-foreground">
+      <nav data-testid="app-navigation" className="border-b border-border bg-[color:var(--color-shell)]">
+        <div className="mx-auto flex h-12 max-w-[1240px] items-center gap-4 px-4 sm:px-6">
+          <Link to="/decisions" className="flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground">
+            <span aria-hidden className="font-display grid size-6 place-items-center rounded-md bg-primary text-[13px] text-primary-foreground">D</span>
             {APP_NAME}
           </Link>
 

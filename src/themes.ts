@@ -18,6 +18,11 @@
 
 export const THEMES = [
   {
+    id: 'charcoal',
+    label: 'Charcoal',
+    description: 'DecisionRoom: charcoal surfaces, warm off-white text, champagne accent.',
+  },
+  {
     id: 'slate',
     label: 'Slate',
     description: 'Neutral dark placeholder default. Replace with your own theme.',

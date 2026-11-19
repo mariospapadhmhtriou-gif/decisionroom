@@ -232,3 +232,22 @@
     touch-action: manipulation;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * DecisionRoom base styles
+ * ------------------------------------------------------------------------- */
+:root {
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+}
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.font-display { font-family: var(--font-display); }
+.tabular { font-variant-numeric: tabular-nums; }
+/* Visible keyboard focus everywhere, never on mouse click. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+input[type='range'] { accent-color: var(--color-primary); }

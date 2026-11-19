@@ -44,3 +44,34 @@
   --color-shell: #fafafa;
   --color-shell-panel: #ffffff;
 }
+
+/* Charcoal — DecisionRoom's theme. Neutral charcoal surfaces (no green
+ * tint), warm off-white text, restrained champagne accent used only for
+ * primary actions, focus, and the computed result. */
+[data-theme="charcoal"] {
+  color-scheme: dark;
+  --color-background: #161719;
+  --color-foreground: #ede9e2;
+  --color-card: #1e1f22;
+  --color-card-foreground: #ede9e2;
+  --color-popover: #232428;
+  --color-popover-foreground: #ede9e2;
+  --color-primary: #cdb283;
+  --color-primary-foreground: #1a1915;
+  --color-secondary: #2a2b2f;
+  --color-secondary-foreground: #ede9e2;
+  --color-muted: #26272b;
+  --color-muted-foreground: #a8a39b;
+  --color-accent: #2c2d32;
+  --color-accent-foreground: #ede9e2;
+  --color-destructive: #e0715f;
+  --color-destructive-foreground: #1a1915;
+  --color-border: #34363b;
+  --color-input: #45474d;
+  --color-ring: #dcc597;
+  --radius: 0.5rem;
+  --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+  --shadow-card-hover: 0 2px 8px 0 rgba(0, 0, 0, 0.3);
+  --color-shell: #131416;
+  --color-shell-panel: #1e1f22;
+}
