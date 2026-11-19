@@ -1,7 +1,7 @@
 /*
- * Theme overrides — applied via <html data-theme="<id>">.
+ * Theme overrides, applied via <html data-theme="<id>">.
  *
- * Default values live in `styles.css` (@theme block, slate — a neutral
+ * Default values live in `styles.css` (@theme block, slate, a neutral
  * placeholder, not a design choice). Every app should define its OWN theme
  * before first deploy: copy the example block below, rename the selector,
  * and set colors that fit the product. Shape comes from `--radius`.
@@ -16,7 +16,7 @@
  *   4. Switch to it via `data-theme` on <html> in index.html.
  */
 
-/* Paper — light example theme; shows the full token contract incl.
+/* Paper, light example theme; shows the full token contract incl.
  * `color-scheme: light`. Replace or delete it once the app has its own. */
 [data-theme="paper"] {
   color-scheme: light;
@@ -45,7 +45,7 @@
   --color-shell-panel: #ffffff;
 }
 
-/* Charcoal — DecisionRoom's theme. Neutral charcoal surfaces (no green
+/* Charcoal, DecisionRoom's theme. Neutral charcoal surfaces (no green
  * tint), warm off-white text, restrained champagne accent used only for
  * primary actions, focus, and the computed result. */
 [data-theme="charcoal"] {

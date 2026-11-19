@@ -25,7 +25,7 @@ export interface DecodedReactError {
 
 /**
  * Friendly text for the React errors apps actually hit. Kept deliberately
- * small — any other code still decodes to a generic, linkable result.
+ * small, any other code still decodes to a generic, linkable result.
  */
 const REACT_ERROR_TABLE: Record<number, Omit<DecodedReactError, 'code' | 'docsUrl'>> = {
   300: {
@@ -68,7 +68,7 @@ function errorMessage(error: unknown): string | null {
 
 /**
  * Decode a (possibly minified) React error into a friendly explanation, or
- * `null` if it isn't a recognizable React error — in which case the caller
+ * `null` if it isn't a recognizable React error, in which case the caller
  * should just show the raw message.
  */
 export function decodeReactError(error: unknown): DecodedReactError | null {

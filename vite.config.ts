@@ -22,7 +22,7 @@ export default defineConfig({
       inspectorPort: false,
     }),
     // The app id `define`, the preview-secret cleanup, and the client dedupe
-    // hint — all shipped by the SDK so a fix to any of them arrives with a
+    // hint, all shipped by the SDK so a fix to any of them arrives with a
     // version bump, not an app edit. The app id is read from the wrangler
     // config THIS build targets (wrangler.toml, or the env-flattened config
     // `deepspace deploy --env` generates); src/constants.ts is the only
@@ -30,7 +30,7 @@ export default defineConfig({
     deepspaceBuild({ appDir }),
     // Prerenders the public pages listed in src/prerender-entry.tsx into static
     // HTML at `vite build`, stamps their <Seo> head, and writes sitemap.xml plus
-    // the robots.txt Sitemap line from src/seo.ts — so crawlers that do not run
+    // the robots.txt Sitemap line from src/seo.ts, so crawlers that do not run
     // JavaScript read real content. See prerender.ts; delete this line for a
     // plain SPA.
     prerender(),
@@ -53,14 +53,14 @@ export default defineConfig({
   },
   optimizeDeps: {
     // generouted loads routes via `import.meta.glob`, which Vite's esbuild dep-scanner
-    // does not evaluate — so every dep reachable only through the page tree (UI libs,
+    // does not evaluate, so every dep reachable only through the page tree (UI libs,
     // and deepspace via _app.tsx) is invisible to the cold scan, discovered late, and
     // triggers a re-optimize + full reload on first `dev` boot. That reload is where a
     // transient "Cannot read properties of null (reading 'useState')" can surface before
     // the error boundary recovers. Point the scanner at the route files (plus the html
     // entry) so the first optimize pass is complete and no late re-optimize fires.
-    // Scoped to src/pages (NOT all of src) so worker-only modules — actions, cron, jobs,
-    // ai, which import deepspace/worker — are not dragged into the client optimizer.
+    // Scoped to src/pages (NOT all of src) so worker-only modules, actions, cron, jobs,
+    // ai, which import deepspace/worker, are not dragged into the client optimizer.
     // Dev-only; `vite build` ignores optimizeDeps.
     entries: ['./index.html', './src/pages/**/*.tsx'],
   },

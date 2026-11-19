@@ -1,4 +1,4 @@
-# DecisionRoom — submission note
+# DecisionRoom, submission note
 
 - **Live URL:** https://decision-room.app.space
 - **Repository:** https://github.com/mariospapadhmhtriou-gif/decisionroom (branch `main`; final commit: see `git log -1`)
@@ -6,17 +6,17 @@
 ## What was built
 
 A private decision workspace on DeepSpace. A signed-in user creates a decision (question + constraints), edits
-three options, three weighted criteria (0–10) and scores (1–5), and sees a deterministic weighted ranking with
+three options, three weighted criteria (0-10) and scores (1-5), and sees a deterministic weighted ranking with
 explicit ties. They search the web, choose which results to save as evidence on a specific option (with notes),
 ask AI to draft an editable brief that cites only those saved sources, and email the final brief to their own
 address after previewing exactly what will be sent. Everything persists to an owner-private record.
 
 ## DeepSpace integrations actually used (each exercised on the live app)
 
-1. **Exa web search** (`exa/search`) — evidence search on explicit user action.
-2. **Anthropic** (`anthropic/chat-completion`, `claude-haiku-5-5`) — drafts the brief's prose as structured JSON;
+1. **Exa web search** (`exa/search`), evidence search on explicit user action.
+2. **Anthropic** (`anthropic/chat-completion`, `claude-haiku-5-5`), drafts the brief's prose as structured JSON;
    the app inserts the ranking itself and filters citations to saved source IDs.
-3. **Email** (`email/send`) — sends the saved brief to the signed-in user's own address.
+3. **Email** (`email/send`), sends the saved brief to the signed-in user's own address.
 
 Platform primitives (not counted as integrations): DeepSpace auth, a native record collection with
 server-enforced `read: 'own'` permissions, realtime `useQuery`, server actions, and `deepspace deploy`.
@@ -41,14 +41,14 @@ logs: AI briefs failed because the model's thinking used up the token budget and
 ## Verification
 
 **Automated (run by the agent, all passing at the final commit):**
-- `npx tsc --noEmit` — no errors.
-- `npx eslint src` — no findings.
-- `npx vitest run` — 28 tests: scoring (known average, priorities changing the winner, all-zero weights, ties,
+- `npx tsc --noEmit`, no errors.
+- `npx eslint src`, no findings.
+- `npx vitest run`, 28 tests: scoring (known average, priorities changing the winner, all-zero weights, ties,
   excluded criteria, no input mutation), document validation, corrupted data, reference-ID filtering, HTML
   escaping, email composition, prompt framing of untrusted source text.
-- `npx vite build` — succeeds.
-- `npx deepspace test run` — scaffold smoke + API suites, 8/8 (local dev server).
-- `npx playwright test -c tests/playwright.live.config.ts` — **against the live app** with two DeepSpace test
+- `npx vite build`, succeeds.
+- `npx deepspace test run`, scaffold smoke + API suites, 8/8 (local dev server).
+- `npx playwright test -c tests/playwright.live.config.ts`, **against the live app** with two DeepSpace test
   accounts: user B cannot see or open user A's decision; `saveDecision`, `generateBrief`, `searchEvidence`,
   `emailBrief`, `deleteDecision` on A's id with B's token all return `not_found`; no token / forged token → 401;
   stale revision → `conflict`; score 9, weight 11 and a `javascript:` evidence URL → `invalid`.
@@ -61,7 +61,7 @@ up to date again after reverting; email preview showed the sign-in address; one 
 a second identical send was refused as a duplicate; AI failure kept the page usable and showed a clear error;
 narrow-screen (390 px) layout reviewed with no horizontal overflow.
 
-**Applicant's own verification:** _not yet done — to be completed by the applicant before submitting._
+**Applicant's own verification:** _not yet done, to be completed by the applicant before submitting._
 Suggested checks:
 - [ ] Confirm the test email actually arrived in your inbox (the agent only saw "accepted for delivery").
 - [ ] On your phone, open a decision and edit scores, weights, evidence notes and the brief.

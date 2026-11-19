@@ -1,14 +1,14 @@
 /**
- * Deterministic weighted scoring — pure, no I/O, shared by browser and worker.
+ * Deterministic weighted scoring, pure, no I/O, shared by browser and worker.
  *
  * weighted score = Σ(score × weight) / Σ(weight)
  *
- * - Scores are integers 1–5 (higher is always better).
- * - Weights are integers 0–10; a zero weight excludes that criterion.
+ * - Scores are integers 1-5 (higher is always better).
+ * - Weights are integers 0-10; a zero weight excludes that criterion.
  * - All weights zero → no valid ranking (we never invent one).
  * - Ties are reported explicitly; no hidden tie-breaker picks a winner.
  *
- * The result is a preference score on the same 1–5 scale. It is not a
+ * The result is a preference score on the same 1-5 scale. It is not a
  * probability, a confidence estimate, or an objective product rating.
  */
 
@@ -64,7 +64,7 @@ export function rankOptions(input: ScoringInput): Ranking {
   return { valid: true, totals, order, leaders, tie: leaders.length > 1, totalWeight }
 }
 
-/** Share of the decision each criterion carries, 0–1 (all zero when no weight). */
+/** Share of the decision each criterion carries, 0-1 (all zero when no weight). */
 export function weightShares(criteria: readonly ScoringCriterion[]): number[] {
   const total = criteria.reduce((sum, c) => sum + c.weight, 0)
   return criteria.map((c) => (total > 0 ? c.weight / total : 0))

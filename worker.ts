@@ -1,5 +1,5 @@
 /**
- * App Worker — explicit assembly for DeepSpace app routes and Durable Objects.
+ * App Worker, explicit assembly for DeepSpace app routes and Durable Objects.
  *
  * Route implementations live under src/server. Keep their registration order
  * here: specific API and WebSocket handlers must precede the SPA fallback.
@@ -125,7 +125,7 @@ export type AppContext = { Bindings: Env }
 const app = new Hono<AppContext>()
 app.use('/api/*', cors())
 // A Durable Object exists only once something fetches it, and the CronRoom
-// arms its alarm in that first fetch — so wake it from the request path, or a
+// arms its alarm in that first fetch, so wake it from the request path, or a
 // deployed schedule waits for a visitor. Once per isolate; no-op without tasks.
 app.use('*', async (c, next) => {
   armCronRoom(c.executionCtx, c.env.CRON_ROOMS, `app:${c.env.DEEPSPACE_APP_ID}`, cronTasks)
@@ -147,10 +147,10 @@ registerPlatformProxyRoutes(app)
 registerStaticRoutes(app)
 
 // Hono registers ONE error handler (last onError wins), and its default is
-// `console.error(err)` — whose message Workers Logs drops, keeping only the
+// `console.error(err)`, whose message Workers Logs drops, keeping only the
 // stack frames. workerErrorHandler logs the string form instead (message
 // first, frames and bounded cause chain, method + path for context), keeps a
-// response-bearing error's (HTTPException — auth 401s, upload 413s) own
+// response-bearing error's (HTTPException, auth 401s, upload 413s) own
 // answer, and returns a generic 500 for the rest.
 app.onError(workerErrorHandler('error'))
 

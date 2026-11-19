@@ -2,7 +2,7 @@
  * Build-time render entry for prerender.ts (at the app root). Never shipped to
  * the browser and never run by `deepspace dev`.
  *
- * PAGES lists the public pages — the ones at the top level of src/pages/ that
+ * PAGES lists the public pages, the ones at the top level of src/pages/ that
  * render with no DeepSpace providers. Add a page here when you add one, and it
  * is prerendered to static HTML and listed in sitemap.xml. Pages under
  * src/pages/(app)/ mount auth and realtime and cannot be prerendered.

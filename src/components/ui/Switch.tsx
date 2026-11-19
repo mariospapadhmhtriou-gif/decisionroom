@@ -3,7 +3,7 @@ import { Switch as SwitchPrimitive } from '@base-ui/react/switch'
 import { cn } from '@/lib/utils'
 
 /**
- * Switch — wraps Base UI's Switch. Base UI owns the controlled/uncontrolled
+ * Switch, wraps Base UI's Switch. Base UI owns the controlled/uncontrolled
  * state, keyboard/ARIA, and the hidden form input (a sibling, not illegally
  * nested inside the button). Style via the `data-[checked]` / `data-[unchecked]`
  * state attributes.

@@ -50,7 +50,7 @@ interface ToastContextValue {
 }
 
 // ============================================================================
-// Icons (inline SVGs — no external dependency)
+// Icons (inline SVGs, no external dependency)
 // ============================================================================
 
 function CheckCircleIcon({ className }: { className?: string }) {
@@ -221,7 +221,7 @@ export function ToastProvider({
 // ============================================================================
 
 /**
- * Per-type visual config. Body uses the neutral popover surface — the type
+ * Per-type visual config. Body uses the neutral popover surface, the type
  * is conveyed by a thin colored left-edge accent and the icon glyph alone,
  * not by tinting the title text or stamping a chunky colored block behind
  * the icon. Cleaner read; doesn't compete with the page underneath.
@@ -264,7 +264,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps): React.ReactElement {
       `}
       role="alert"
     >
-      {/* Colored left-edge accent — the only chrome that reflects the type. */}
+      {/* Colored left-edge accent, the only chrome that reflects the type. */}
       <span className={`absolute inset-y-0 left-0 w-[3px] ${accent}`} aria-hidden />
       <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${icon}`} />
       <div className="flex-1 min-w-0">

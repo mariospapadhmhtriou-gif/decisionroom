@@ -1,5 +1,5 @@
 /**
- * Landing page — STATIC (no auth fetch, no socket), prerendered at build.
+ * Landing page, STATIC (no auth fetch, no socket), prerendered at build.
  * Deliberately compact: it explains the workflow and gets out of the way.
  */
 
@@ -9,7 +9,7 @@ import { seo } from '../seo'
 
 const steps = [
   ['Make priorities explicit', 'Three options, three criteria, weights from 0 to 10, scores from 1 to 5.'],
-  ['See a ranking you can check', 'A plain weighted average — ties stay ties, and nothing is hidden.'],
+  ['See a ranking you can check', 'A plain weighted average. Ties stay ties, and nothing is hidden.'],
   ['Save evidence you chose', 'Search the web, keep the results you trust, attach them to an option.'],
   ['Get an editable brief', 'AI drafts the reasoning from your saved inputs and cites only your sources. Email it to yourself.'],
 ]
@@ -21,10 +21,10 @@ export default function Landing() {
       <div data-testid="static-landing" className="min-h-screen bg-background">
         <header className="border-b border-border bg-[color:var(--color-shell)]">
           <div className="mx-auto flex h-12 max-w-5xl items-center justify-between px-4 sm:px-6">
-            <span className="flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground">
+            <Link to="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground">
               <span aria-hidden className="font-display grid size-6 place-items-center rounded-md bg-primary text-[13px] text-primary-foreground">D</span>
               DecisionRoom
-            </span>
+            </Link>
             <Link to="/decisions" className="text-sm text-muted-foreground hover:text-foreground">Sign in</Link>
           </div>
         </header>
@@ -35,7 +35,7 @@ export default function Landing() {
           </h1>
           <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
             Compare options against priorities you set, keep the evidence you found, and get a draft brief that shows its
-            working — the ranking is arithmetic you control, not an AI verdict.
+            working. The ranking is arithmetic you control, not an AI verdict.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
@@ -55,7 +55,7 @@ export default function Landing() {
             ))}
           </ol>
           <p className="mt-6 text-xs text-muted-foreground">
-            Decisions are private to your account. Search results and AI drafts can be wrong — check the sources.
+            Decisions are private to your account. Search results and AI drafts can be wrong, so check the sources.
           </p>
         </main>
       </div>

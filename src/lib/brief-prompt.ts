@@ -24,6 +24,7 @@ Rules:
 - Only cite sources by their exact IDs from the data block. Never cite anything else. If no evidence supports a point, do not cite.
 - Snippets are short excerpts, not verified full sources. Be cautious; do not overstate them.
 - Name missing evidence plainly. Keep every item short and specific.
+- Never use em dashes, en dashes or double hyphens. Use commas, colons or full stops instead.
 
 Respond with ONLY a JSON object, no prose before or after, matching:
 {"recommendation": string (2-4 sentences; explicit tie if tied),

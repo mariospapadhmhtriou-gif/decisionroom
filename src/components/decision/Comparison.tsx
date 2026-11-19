@@ -1,5 +1,5 @@
 /**
- * The editable comparison: option names, criteria + weights, and 1–5 scores,
+ * The editable comparison: option names, criteria + weights, and 1-5 scores,
  * with the computed weighted score as a read-only footer.
  * Desktop: a table. Narrow screens: priorities list + one card per option.
  */
@@ -117,7 +117,7 @@ export function Comparison({ doc, ranking, update }: { doc: DecisionDoc; ranking
                   className={cn('px-3 pt-4 align-top', isLeader(i) && 'bg-primary/[0.06] shadow-[inset_0_2px_0_var(--color-primary)]')}
                 >
                   <div className={cn('font-display tabular text-2xl', isLeader(i) ? 'text-primary' : 'text-foreground/85')}>
-                    {ranking.valid ? formatScore(ranking.totals[i]) : '—'}
+                    {ranking.valid ? formatScore(ranking.totals[i]) : 'n/a'}
                   </div>
                   {ranking.valid && (
                     <div className="text-xs text-muted-foreground">
@@ -172,7 +172,7 @@ export function Comparison({ doc, ranking, update }: { doc: DecisionDoc; ranking
                 />
                 <div className="shrink-0 text-right">
                   <div className={cn('font-display tabular text-xl', isLeader(i) ? 'text-primary' : 'text-foreground/85')}>
-                    {ranking.valid ? formatScore(ranking.totals[i]) : '—'}
+                    {ranking.valid ? formatScore(ranking.totals[i]) : 'n/a'}
                   </div>
                 </div>
               </div>

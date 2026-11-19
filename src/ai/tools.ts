@@ -1,8 +1,8 @@
 /**
- * AI Tool Definitions — converts DeepSpace BUILT_IN_TOOLS to Vercel AI SDK tools.
+ * AI Tool Definitions, converts DeepSpace BUILT_IN_TOOLS to Vercel AI SDK tools.
  *
  * The assistant can read AND modify data. Per-collection RBAC at the DO
- * layer is the actual security boundary — the user's role determines what
+ * layer is the actual security boundary, the user's role determines what
  * each tool call is allowed to do, regardless of what's in this allowlist.
  * Trim entries below if you want a stricter assistant for your app.
  */
@@ -56,14 +56,14 @@ export function buildSystemPrompt(appName: string, schemas: CollectionSchema[]):
   return [
     `You are the assistant for the "${appName}" app on DeepSpace.`,
     "You can read and modify the user's data via the available tools. The",
-    "user's own role and permissions still apply at the data layer — your",
+    "user's own role and permissions still apply at the data layer, your",
     'tool calls run as the calling user, so you can only do what they could.',
     '',
     'Be careful with mutations:',
     '- Confirm intent before destructive actions (delete, bulk update).',
     '- Operate only on collections the user explicitly mentioned.',
     '- After a successful write, briefly confirm what changed.',
-    '- If a write is denied (RBAC), tell the user plainly — do not retry blindly.',
+    '- If a write is denied (RBAC), tell the user plainly, do not retry blindly.',
     '',
     'Use tools to look up facts before answering. Do not invent data.',
     'If data is missing, say so plainly. Keep answers concise.',
@@ -106,7 +106,7 @@ export function buildTools(executor: ToolExecutor): ToolSet {
  * derived from it with Zod's native conversion, which keeps z.record()
  * objects open (`additionalProperties: {}`). The AI SDK's own Zod conversion
  * closes every object, which would incorrectly advertise the free-form
- * `data` and `where` objects as empty — so the conversion happens here.
+ * `data` and `where` objects as empty, so the conversion happens here.
  */
 function buildInputSchema(def: ToolSchema) {
   const shape: Record<string, z.ZodTypeAny> = {}

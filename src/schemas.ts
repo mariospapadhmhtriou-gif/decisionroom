@@ -1,5 +1,5 @@
 /**
- * Collection Schemas — single source of truth, imported by worker and frontend.
+ * Collection Schemas, single source of truth, imported by worker and frontend.
  */
 
 import type { CollectionSchema } from 'deepspace/schema'

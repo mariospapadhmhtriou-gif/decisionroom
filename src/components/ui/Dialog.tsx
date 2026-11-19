@@ -1,5 +1,5 @@
 /**
- * Dialog — thin wrappers over Base UI's Dialog primitives, styled with Tailwind.
+ * Dialog, thin wrappers over Base UI's Dialog primitives, styled with Tailwind.
  *
  * Base UI (by the creators of Radix + Floating UI) owns the hard parts we used
  * to hand-roll: backdrop dismissal, Escape, focus trapping, scroll locking,

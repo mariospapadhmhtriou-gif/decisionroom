@@ -54,7 +54,7 @@ export async function resolveAgentAuth(req: Request, env: Env): Promise<VerifyRe
 /**
  * Re-assert this app's identity headers on a proxied request, fail-closed.
  * Never forwards caller-supplied identity; attaches ours only when the app
- * has a token (absent pre-first-deploy — see Env.APP_IDENTITY_TOKEN).
+ * has a token (absent pre-first-deploy, see Env.APP_IDENTITY_TOKEN).
  */
 function reassertAppIdentity(headers: Headers, env: Env): void {
   headers.delete('x-app-identity-token')
@@ -373,8 +373,7 @@ const matches = (pathname: string, prefixes: readonly string[]): boolean =>
   prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
 
 /**
- * An unmatched API call must 404 without consulting the asset layer at all —
- * answering it with a static file, or with HTML a client then parses as JSON,
+ * An unmatched API call must 404 without consulting the asset layer at all, * answering it with a static file, or with HTML a client then parses as JSON,
  * is never right.
  */
 const API_PREFIXES = ['/api']
@@ -388,7 +387,7 @@ const SPA_SHELL_PATH = '/_spa'
 
 /**
  * A FILE, not a client route: last segment carries an extension. Wrong in only
- * the cheap direction — a dotted route 404s visibly, where a missing file
+ * the cheap direction, a dotted route 404s visibly, where a missing file
  * getting the shell is HTML parsed as JavaScript and a blank page.
  */
 function namesAFile(pathname: string): boolean {
@@ -404,7 +403,7 @@ function namesAFile(pathname: string): boolean {
 export function registerStaticRoutes(app: Hono<AppContext>): void {
   // The API guard is METHOD-AGNOSTIC and sits ahead of the GET fallback, so a
   // POST/PUT/DELETE to a mistyped or rolled-back API route gets the same JSON
-  // 404 a GET does — Hono's default would answer it with plain text, which is
+  // 404 a GET does, Hono's default would answer it with plain text, which is
   // precisely the "text parsed as JSON" failure this guard exists to prevent.
   // Every non-API path falls through to the asset handling below.
   app.all('*', async (c, next) => {
@@ -423,7 +422,7 @@ export function registerStaticRoutes(app: Hono<AppContext>): void {
       return c.json({ error: 'not_found' }, 404)
     }
     // Once the prerender has run, `/` is the landing page, not an empty
-    // shell — serving it for /home would paint the landing for a frame and
+    // shell, serving it for /home would paint the landing for a frame and
     // hand crawlers the `/` canonical on every app route. Ask for the plain
     // shell the build writes first; a build without it (plain SPA,
     // `deepspace dev`) misses and falls through to `/` exactly as before.

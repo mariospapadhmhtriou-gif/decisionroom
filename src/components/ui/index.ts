@@ -1,10 +1,10 @@
 /**
- * UI primitives — correct-by-default, built on Base UI (@base-ui/react) and
+ * UI primitives, correct-by-default, built on Base UI (@base-ui/react) and
  * styled entirely with the app's semantic theme tokens. These are yours:
  * restyle or delete them freely. Build app-specific components alongside them.
  *
  * The look comes from the token values in `styles.css` / `themes.css`
- * (colors, `--radius`, shadows) — change those to change the app, without
+ * (colors, `--radius`, shadows), change those to change the app, without
  * touching these files.
  *
  * @example
@@ -38,7 +38,7 @@ export { EmptyState } from './EmptyState'
 /* Feedback */
 export { ToastProvider, useToast } from './Toast'
 
-/* Overlay — `Modal` for simple controlled dialogs; the `Dialog` family for
+/* Overlay, `Modal` for simple controlled dialogs; the `Dialog` family for
  * triggers, nesting, and custom composition. */
 export {
   Dialog, DialogPortal, DialogOverlay, DialogTrigger, DialogClose,

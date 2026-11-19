@@ -3,7 +3,7 @@
  *
  * The scaffold ships two placeholder themes: `slate` (dark default, defined
  * in styles.css) and `paper` (light example, defined in themes.css). They
- * are scaffolding, not a design — give the app its own theme before first
+ * are scaffolding, not a design, give the app its own theme before first
  * deploy:
  *   1. Add a `[data-theme="my-id"] { ... }` block in src/themes.css with
  *      the shadcn token overrides (include `color-scheme: light;` for
@@ -13,7 +13,7 @@
  *      index.html so the pre-CSS frame matches (no white flash).
  *   4. Switch via `data-theme` on <html> in index.html.
  *
- * Color values live in styles.css / themes.css — this file is metadata only.
+ * Color values live in styles.css / themes.css, this file is metadata only.
  */
 
 export const THEMES = [

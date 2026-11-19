@@ -129,7 +129,7 @@ describe('AI brief handling', () => {
     const { kept, dropped } = validateReferences(ai, d.evidence)
     const text = composeBriefText(d, ai, kept, dropped)
     expect(text).toContain('\nRANKING (calculated by DecisionRoom')
-    expect(text).toContain('1. Trail Endure — 3.63 / 5')
+    expect(text).toContain('1. Trail Endure: 3.63 / 5')
     expect(text).toContain('[S1] Battery is good.')
     expect(text).not.toContain('S9')
     expect(text).not.toContain('\\n')

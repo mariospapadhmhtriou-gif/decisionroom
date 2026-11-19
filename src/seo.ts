@@ -1,5 +1,5 @@
 /**
- * Public-page SEO — what search engines, AI answer engines, and link previews
+ * Public-page SEO, what search engines, AI answer engines, and link previews
  * see for this app.
  *
  * Two consumers read this file, so the values can never disagree:
@@ -27,7 +27,7 @@ declare const __DEEPSPACE_SITE_ORIGIN__: string | undefined
 export const seo = {
   title: `${APP_NAME} | Explainable decision briefs`,
   description: `${APP_NAME}: compare three options against weighted priorities, save web evidence, and draft an editable, source-cited decision brief.`,
-  /** Public origin for canonical URLs, og:url, and the sitemap — no trailing
+  /** Public origin for canonical URLs, og:url, and the sitemap, no trailing
    *  slash. Replace with the custom domain once one is attached, e.g.
    *  'https://www.example.com'. */
   origin: typeof __DEEPSPACE_SITE_ORIGIN__ === 'string' ? __DEEPSPACE_SITE_ORIGIN__ : 'http://localhost',

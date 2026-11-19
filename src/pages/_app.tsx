@@ -1,5 +1,5 @@
 /**
- * Root shell — wraps every route, static and dynamic alike.
+ * Root shell, wraps every route, static and dynamic alike.
  *
  * This layout deliberately mounts NO DeepSpace providers, so a page placed at
  * the top level of src/pages/ (like index.tsx) renders as a plain static page:
@@ -24,7 +24,7 @@ export default function App() {
     <ToastProvider>
       {/* The single TooltipProvider: owns the hover delay for every Tooltip
           and groups them so adjacent triggers switch instantly. Tune delay
-          here — per-Tooltip providers would shadow it (see ui/Tooltip.tsx). */}
+          here, per-Tooltip providers would shadow it (see ui/Tooltip.tsx). */}
       <TooltipProvider>
         {/* data-testid="app-root" is the canonical "app shell mounted" hook,
             present on every page (static and dynamic). Don't rename without
@@ -41,8 +41,8 @@ export default function App() {
 
 /**
  * Root error boundary. Generouted wires a `_app` `Catch` export to the root
- * route's errorElement, so any render-time crash in a page — a thrown error,
- * or a hooks-rule violation like React #310 — lands here instead of React
+ * route's errorElement, so any render-time crash in a page, a thrown error,
+ * or a hooks-rule violation like React #310, lands here instead of React
  * Router's raw minified screen. ErrorScreen decodes the error for the developer.
  */
 export function Catch() {

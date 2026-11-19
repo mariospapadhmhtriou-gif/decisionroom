@@ -4,13 +4,13 @@
  * Edit this file then `deepspace deploy` to sync the catalog to the platform.
  * Each row declares a `productId` (your entitlement key) and the amount the
  * platform will charge when `chargeOnce({ productId })` runs. The browser
- * cannot override these — the platform looks up amount/name from this list
+ * cannot override these, the platform looks up amount/name from this list
  * at checkout time, so `useCheckout({ productId }).owned` is trustworthy.
  *
- * Drop a row to deactivate it (historical purchases keep working — the row
+ * Drop a row to deactivate it (historical purchases keep working, the row
  * is marked inactive, not deleted).
  *
- * Minimum amount: 100 cents — below this Stripe fees eat the charge.
+ * Minimum amount: 100 cents, below this Stripe fees eat the charge.
  */
 
 export const oneTimeProducts = [

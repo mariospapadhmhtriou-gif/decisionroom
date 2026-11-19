@@ -8,7 +8,7 @@ required. Installing the optional skill is a separate explicit choice.
 
 ## About this project
 
-This is a **DeepSpace** app — a real-time collaborative app built on the
+This is a **DeepSpace** app, a real-time collaborative app built on the
 [`deepspace`](https://www.npmjs.com/package/deepspace) SDK and deployed to
 Cloudflare Workers via `npx deepspace deploy`.
 

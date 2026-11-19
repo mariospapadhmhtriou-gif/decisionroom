@@ -1,11 +1,11 @@
 /**
- * AI chat routes — multi-turn tool-use via Vercel AI SDK + DeepSpace proxy.
+ * AI chat routes, multi-turn tool-use via Vercel AI SDK + DeepSpace proxy.
  *
  * Registers four endpoints on the passed-in Hono app:
- *   POST   /api/ai/chats       — create a chat owned by the caller
- *   PATCH  /api/ai/chats/:id   — rename / patch a chat
- *   DELETE /api/ai/chats/:id   — delete chat + cascade messages
- *   POST   /api/ai/chat        — streamed assistant turn (the big one)
+ *   POST   /api/ai/chats, create a chat owned by the caller
+ *   PATCH  /api/ai/chats/:id, rename / patch a chat
+ *   DELETE /api/ai/chats/:id, delete chat + cascade messages
+ *   POST   /api/ai/chat, streamed assistant turn (the big one)
  *
  * Lives in its own file so worker.ts can stay small and the streaming
  * handler's full context (compaction, tools, persistence, abort handling)
@@ -36,7 +36,7 @@ import {
 import type { AgentToolAccessResult, AgentToolRouteOptions, ChatTurn } from 'deepspace/worker'
 import { schemas } from '../schemas.js'
 import { buildSystemPrompt } from './tools.js'
-// Type-only — TypeScript strips these at runtime, so no circular import
+// Type-only, TypeScript strips these at runtime, so no circular import
 // with worker.ts (which imports `registerAiChatRoutes` from this file).
 import type { Env, AppContext } from '../../worker.js'
 
@@ -46,7 +46,7 @@ type AccessGrant = Extract<AgentToolAccessResult, { ok: true }>
 type ToolFactory = AgentToolRouteOptions<Env>['buildTools']
 
 function recordRoomStub(env: Env): DurableObjectStub {
-  // Rooms are keyed by the immutable app id — the same `app:${DEEPSPACE_APP_ID}`
+  // Rooms are keyed by the immutable app id, the same `app:${DEEPSPACE_APP_ID}`
   // the client's RecordScope (SCOPE_ID) and worker.ts's own stubs use. Keying
   // by APP_NAME would read/write a room the browser never subscribes to.
   return env.RECORD_ROOMS.get(env.RECORD_ROOMS.idFromName(`app:${env.DEEPSPACE_APP_ID}`))
@@ -56,7 +56,7 @@ function recordRoomStub(env: Env): DurableObjectStub {
 // blocks accidental DoS via megabyte payloads.
 const MAX_USER_CONTENT_LENGTH = 100_000
 
-// Derive a chat title from the first user message — first non-empty line,
+// Derive a chat title from the first user message, first non-empty line,
 // trimmed to ~50 chars with an ellipsis.
 function deriveTitle(content: string): string {
   const first =
@@ -201,7 +201,7 @@ export function registerAiChatRoutes(
 
     // Append the in-flight user message in memory so the LLM sees it; its DO
     // write is the first persistence operation in `persistTurn`.
-    // Then dedup consecutive user messages — defense-in-depth for legacy
+    // Then dedup consecutive user messages, defense-in-depth for legacy
     // chats with orphan user rows AND for the rare case where a prior turn's
     // user-write succeeded but the assistant-write failed both retries.
     // Crucial: dedup runs AFTER appending the in-flight; otherwise a trailing
@@ -244,7 +244,7 @@ export function registerAiChatRoutes(
 
     // Compaction inserts at most one summary system message at index 0; fold
     // it into the top-level `system` so we don't pass two system roles. Then
-    // convert the remaining ChatTurns into AI SDK ModelMessages — splitting
+    // convert the remaining ChatTurns into AI SDK ModelMessages, splitting
     // assistant rows into the assistant + paired tool messages the SDK expects.
     const [first, ...rest] = prepared
     const summary = first?.role === 'system' ? first : null
@@ -264,8 +264,7 @@ export function registerAiChatRoutes(
 
     // Allocate the assistant row id BEFORE streaming starts so we can echo it
     // back via a response header. The client tags its in-flight overlay with
-    // this id and dedups against the WebSocket-broadcast persisted row by id —
-    // not by comparing `spawnTime` (client clock) to `createdAt` (server clock),
+    // this id and dedups against the WebSocket-broadcast persisted row by id, // not by comparing `spawnTime` (client clock) to `createdAt` (server clock),
     // which broke for users whose clock was ahead of the server.
     const asstId = `asst-${Date.now()}-${crypto.randomUUID()}`
 
@@ -282,12 +281,12 @@ export function registerAiChatRoutes(
       // Persist user → assistant → metadata as independent writes, not a
       // transaction. Order matters: user FIRST so chronological reads are
       // correct, then assistant. If user-write
-      // exhausts retries we ABORT the assistant write — otherwise we'd persist
+      // exhausts retries we ABORT the assistant write, otherwise we'd persist
       // an assistant row with no preceding user row, breaking the invariant
       // relied on by the dedup + turnsToCoreMessages loop on the next turn.
       //
       // The helpers return `false` (no throw) when the chat no longer exists
-      // — deleted mid-stream — and nothing was written; that is not retried,
+      //, deleted mid-stream, and nothing was written; that is not retried,
       // and it stops the sequence the same way an exhausted retry does.
       const writeWithRetry = async (
         label: string,
@@ -296,7 +295,7 @@ export function registerAiChatRoutes(
         for (let attempt = 1; attempt <= 2; attempt++) {
           try {
             if ((await fn()) === false) {
-              console.warn(`[ai-chat] ${label} skipped — chat ${chatId} no longer exists`)
+              console.warn(`[ai-chat] ${label} skipped, chat ${chatId} no longer exists`)
               return false
             }
             return true
@@ -318,7 +317,7 @@ export function registerAiChatRoutes(
       )
       if (!userOk) {
         console.error(
-          '[ai-chat] FINISH aborting — user write did not land; skipping assistant + metadata to avoid orphan rows',
+          '[ai-chat] FINISH aborting, user write did not land; skipping assistant + metadata to avoid orphan rows',
         )
         return
       }
@@ -383,7 +382,7 @@ export function registerAiChatRoutes(
         stream: result.stream,
         // Reasoning models (o-series, Claude with extended thinking) emit
         // `reasoning-start`/`reasoning-delta`/`reasoning-end` chunks. We
-        // don't render them today — pass them through and the user sees a
+        // don't render them today, pass them through and the user sees a
         // stuck spinner during long thinks. Opt out at the boundary until
         // the UI gains a "thinking" disclosure block.
         sendReasoning: false,

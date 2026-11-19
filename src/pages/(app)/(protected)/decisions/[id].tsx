@@ -119,7 +119,7 @@ export default function DecisionPage() {
         />
         <details className="group mt-2" open={!doc.constraints}>
           <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
-            Constraints &amp; context{doc.constraints && <span className="ml-2 line-clamp-1 inline text-foreground/80 group-open:hidden">— {doc.constraints.split('\n')[0]}</span>}
+            Constraints &amp; context{doc.constraints && <span className="ml-2 line-clamp-1 inline text-foreground/80 group-open:hidden">{doc.constraints.split('\n')[0]}</span>}
           </summary>
           <label htmlFor="constraints" className="sr-only">Constraints and context</label>
           <textarea

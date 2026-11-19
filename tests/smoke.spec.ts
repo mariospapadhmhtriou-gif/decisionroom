@@ -42,7 +42,7 @@ test.describe('Smoke tests', () => {
     page.on('request', (req) => {
       if (req.url().includes('/api/auth/')) offenders.push(req.url())
     })
-    // Only the DO room route counts — vite's own HMR socket is a dev artifact.
+    // Only the DO room route counts, vite's own HMR socket is a dev artifact.
     page.on('websocket', (ws) => {
       if (new URL(ws.url()).pathname.startsWith('/ws/')) offenders.push(`ws: ${ws.url()}`)
     })

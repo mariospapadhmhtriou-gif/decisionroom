@@ -10,11 +10,11 @@ const SelectGroup = SelectPrimitive.Group
  * Walk the JSX children to build Base UI's value→label `items` map from the
  * `<SelectItem>` descendants. Base UI's `Select.Value` shows the raw value
  * unless it knows the label, and the popup (which holds the items) isn't
- * mounted while closed — so a data-set value would otherwise render as its
+ * mounted while closed, so a data-set value would otherwise render as its
  * id/code. Deriving `items` here keeps every call site's Radix-style markup
  * unchanged while fixing the label.
  *
- * ⚠️ LIMITATION — SelectItems must be rendered INLINE: direct children,
+ * ⚠️ LIMITATION, SelectItems must be rendered INLINE: direct children,
  * `.map(...)` arrays, and fragments all work, but React cannot see inside
  * another component before it renders, so SelectItems produced by your own
  * wrapper (e.g. a `<StatusOptions/>` that returns them) are INVISIBLE to
@@ -22,7 +22,7 @@ const SelectGroup = SelectPrimitive.Group
  * label. If you must wrap items in a component, pass the map explicitly:
  * `<Select items={{ todo: 'To do', done: 'Done' }} …>`.
  *
- * Also: option values must be NON-EMPTY strings — `''` is reserved for the
+ * Also: option values must be NON-EMPTY strings, `''` is reserved for the
  * cleared/no-selection state (Base UI reports `null`; this wrapper coerces
  * it to `''`), so an `<SelectItem value="">` would render as the placeholder.
  */
@@ -82,7 +82,7 @@ function SelectValue({
         value === null || value === undefined || value === '' ? (
           /* Placeholder branch gets the same className as the value branch,
              so styling a SelectValue applies in both states. (Base UI-typed
-             rest props can't spread onto a plain span — className is the
+             rest props can't spread onto a plain span, className is the
              styling contract here.) */
           <span data-slot="select-value" className={cn('text-muted-foreground', className)}>
             {placeholder}
@@ -154,7 +154,7 @@ function SelectContent({
 }
 
 function SelectLabel({ className, ...props }: React.ComponentProps<'div'>) {
-  // Plain label — Base UI's GroupLabel requires a Select.Group ancestor, but
+  // Plain label, Base UI's GroupLabel requires a Select.Group ancestor, but
   // our call sites use labels standalone.
   return (
     <div

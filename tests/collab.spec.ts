@@ -1,5 +1,5 @@
 /**
- * Multi-user collaboration spec — verifies two users sign in into
+ * Multi-user collaboration spec, verifies two users sign in into
  * separate browser contexts and the app distinguishes them.
  *
  * `users(2)` takes any two accounts from your pool, so this spec passes on a
@@ -8,7 +8,7 @@
  *   npx deepspace test accounts create --email a@deepspace.test --name "A" --password-stdin
  *
  * Ask for accounts *by name* (`users(['Alice', 'Bob'])`) only when the
- * behaviour under test depends on which identity acts — otherwise naming them
+ * behaviour under test depends on which identity acts, otherwise naming them
  * couples the spec to one machine's pool.
  *
  * The `users` fixture handles sign-in caching (per-account storageState
@@ -18,7 +18,7 @@
 import { test, expect, loadAllTestAccounts } from 'deepspace/testing'
 
 // A machine that has never created test accounts is the normal state of a
-// fresh checkout, and there `users()` throws — turning "you have no pool yet"
+// fresh checkout, and there `users()` throws, turning "you have no pool yet"
 // into three red tests about the app, which it is not. Skip the file instead
 // and say what creates the pool. The count is of accounts usable HERE: the
 // pool is global per developer, but passwords live only on the machine that
@@ -39,7 +39,7 @@ test('each browser renders its own signed-in account', async ({ users }) => {
   await Promise.all([a.page.goto('/home'), b.page.goto('/home')])
 
   // Email, not name. The page renders the *session's* `name || email`, while
-  // `user.name` here comes from the LOCAL account registry — and the two are
+  // `user.name` here comes from the LOCAL account registry, and the two are
   // not the same fact: a display name is optional, and an account recovered on
   // another machine has none stored locally at all. The email is the credential
   // the context signed in with, so it is the one identity both sides agree on,

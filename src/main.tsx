@@ -12,7 +12,7 @@ async function main() {
   installStaleChunkRecovery(router)
 
   // Let the router finish loading the first route's code-split module before
-  // rendering. Until then it renders only a loading fallback — and on a page
+  // rendering. Until then it renders only a loading fallback, and on a page
   // prerender.ts wrote at build (the landing), React must hydrate the
   // HTML already on screen with the real page, or it discards that markup and
   // repaints.
@@ -33,7 +33,7 @@ async function main() {
   if (root.dataset.prerendered === window.location.pathname && !router.state.errors) {
     hydrateRoot(root, app, {
       // React recovers from a mismatch by repainting from scratch, so the page
-      // still works — but the visitor saw a flicker and the cause is invisible
+      // still works, but the visitor saw a flicker and the cause is invisible
       // in `deepspace dev`, which never prerenders. Name it.
       onRecoverableError(error) {
         console.error(

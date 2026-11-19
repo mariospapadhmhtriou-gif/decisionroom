@@ -1,5 +1,5 @@
 /**
- * Example gated page. Reached at /settings — no auth logic lives here
+ * Example gated page. Reached at /settings, no auth logic lives here
  * because (protected)/_layout.tsx already wraps the subtree in <AuthGate>.
  */
 
@@ -10,7 +10,7 @@ export default function SettingsPage() {
   const { user } = useUser()
 
   return (
-    // No background on page wrappers — pages render into whatever the app's
+    // No background on page wrappers, pages render into whatever the app's
     // (app)/_layout provides (a plain background, or a raised panel), so they
     // stay transparent and inherit it.
     <div className="min-h-full text-foreground">
@@ -23,11 +23,11 @@ export default function SettingsPage() {
           <dl className="space-y-3 text-sm">
             <div>
               <dt className="text-muted-foreground">Name</dt>
-              <dd className="text-foreground">{user?.name ?? '—'}</dd>
+              <dd className="text-foreground">{user?.name ?? ', '}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground">Email</dt>
-              <dd className="text-foreground">{user?.email ?? '—'}</dd>
+              <dd className="text-foreground">{user?.email ?? ', '}</dd>
             </div>
           </dl>
 

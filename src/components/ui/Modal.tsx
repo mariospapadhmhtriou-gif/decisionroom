@@ -1,4 +1,4 @@
-/** Modal / ConfirmModal — app-level wrappers around Dialog primitives. */
+/** Modal / ConfirmModal, app-level wrappers around Dialog primitives. */
 
 import React, { ReactNode, JSX } from 'react'
 import {
@@ -119,8 +119,7 @@ interface ModalBodyProps {
 
 function ModalBody({ children, className = '' }: ModalBodyProps): JSX.Element {
   // px-1 -mx-1 leaves room for focus rings on inputs (which extend 1px
-  // outside their box) without shrinking the visual content area —
-  // the negative margin compensates for the padding so children still
+  // outside their box) without shrinking the visual content area, // the negative margin compensates for the padding so children still
   // align with Header / Footer. break-words keeps long unbroken strings
   // (filenames, URLs) from forcing horizontal overflow.
   return (

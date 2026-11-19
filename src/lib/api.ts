@@ -28,6 +28,6 @@ export async function callAction<T>(
     return body
   } catch (e) {
     if ((e as Error).name === 'AbortError') return { success: false, error: 'Cancelled.', code: 'aborted' }
-    return { success: false, error: 'Network error — check your connection and try again.', code: 'network' }
+    return { success: false, error: 'Network error. Check your connection and try again.', code: 'network' }
   }
 }

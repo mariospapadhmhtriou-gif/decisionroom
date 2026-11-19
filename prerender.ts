@@ -11,7 +11,7 @@
  *     built template with the page's <Seo> head stamped in and #root filled.
  *     FLAT, not `about/index.html`: the platform's asset layer runs
  *     Cloudflare's default `html_handling: auto-trailing-slash`, which serves
- *     about.html at /about (200) — a nested file would 307 /about → /about/
+ *     about.html at /about (200), a nested file would 307 /about → /about/
  *     and contradict the page's canonical URL.
  *   - `_spa.html`, the untouched empty shell. src/server/http-routes.ts serves
  *     it for client routes (/home, /settings, …) so a refresh there never
@@ -22,7 +22,7 @@
  *
  * Why a Vite plugin: `deepspace deploy` runs `npx vite build` directly, never
  * package.json scripts, so this is the only seam that runs at deploy time.
- * `deepspace dev` never runs it — dev serves the SPA; <Seo> still sets the
+ * `deepspace dev` never runs it, dev serves the SPA; <Seo> still sets the
  * head at runtime. Delete `prerender()` from vite.config.ts for a plain SPA.
  */
 
@@ -88,7 +88,7 @@ export function prerender(): Plugin {
       const templatePath = join(clientDir, 'index.html')
       const template = readFileSync(templatePath, 'utf8')
       if (!template.includes(ROOT_PLACEHOLDER)) {
-        throw new Error(`[prerender] dist/client/index.html has no '${ROOT_PLACEHOLDER}' to fill — keep the scaffold's empty root container.`)
+        throw new Error(`[prerender] dist/client/index.html has no '${ROOT_PLACEHOLDER}' to fill, keep the scaffold's empty root container.`)
       }
 
       // 1. Isolated SSR pass with the same defines (app id, site origin) and
@@ -128,14 +128,14 @@ export function prerender(): Plugin {
       for (const route of routes) {
         const html = entry.render(route)
         const at = html.indexOf(BODY_ANCHOR)
-        if (at < 0) throw new Error(`[prerender] ${route} rendered no '${BODY_ANCHOR}' — src/pages/_app.tsx root markup changed?`)
+        if (at < 0) throw new Error(`[prerender] ${route} rendered no '${BODY_ANCHOR}', src/pages/_app.tsx root markup changed?`)
         const head = html.slice(0, at)
         const body = html.slice(at)
         if (!head.includes('<title>') || !head.includes('name="description"')) {
-          throw new Error(`[prerender] ${route} rendered no <title>/description — render <Seo {...seo} path="${route}" /> first in the page.`)
+          throw new Error(`[prerender] ${route} rendered no <title>/description, render <Seo {...seo} path="${route}" /> first in the page.`)
         }
         if (!body.includes('<h') && !body.includes('<p')) {
-          throw new Error(`[prerender] ${route} rendered an empty page — public pages must return markup without a browser.`)
+          throw new Error(`[prerender] ${route} rendered an empty page, public pages must return markup without a browser.`)
         }
         let page = stampHead(template, head).replace(
           ROOT_PLACEHOLDER,
@@ -186,7 +186,7 @@ export function prerender(): Plugin {
  * Swap the template's default head tags for the page's hoisted <Seo> output:
  * strip the tags <Seo> owns (title, description, robots, canonical, og:/
  * twitter:) and keep everything else (charset, viewport, icon, hashed assets,
- * the first-paint style, any theme script). Fails if a strip no-ops — a
+ * the first-paint style, any theme script). Fails if a strip no-ops, a
  * changed tag shape would otherwise ship two conflicting titles.
  */
 function stampHead(template: string, head: string): string {
@@ -197,7 +197,7 @@ function stampHead(template: string, head: string): string {
     .replace(/<meta\s+(?:property|name)="(?:og|twitter):[^>]*>\s*/g, '')
   for (const leftover of ['<title', 'name="description"', 'rel="canonical"', 'property="og:']) {
     if (stripped.includes(leftover)) {
-      throw new Error(`[prerender] could not strip '${leftover}' from index.html — keep its head to the scaffold's shape and put SEO tags in <Seo>.`)
+      throw new Error(`[prerender] could not strip '${leftover}' from index.html, keep its head to the scaffold's shape and put SEO tags in <Seo>.`)
     }
   }
   return stripped.replace('</head>', () => `${head}\n  </head>`)

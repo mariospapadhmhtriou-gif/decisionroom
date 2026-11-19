@@ -1,9 +1,9 @@
 /**
- * Top nav — minimal placeholder bar wired to the app's mechanisms:
+ * Top nav, minimal placeholder bar wired to the app's mechanisms:
  * nav.ts-driven links (with role/dev filtering), sign-in via <AuthOverlay>,
  * and sign-out. Restyle or rebuild it freely; keep the data-testid hooks
  * (`app-navigation`, `nav-sign-in-button`, `nav-user-name`, `nav-user-email`)
- * — the shipped tests rely on them. `nav-user-email` is the one that carries
+ *, the shipped tests rely on them. `nav-user-email` is the one that carries
  * an identity the test can check exactly: a display name is optional, the
  * email is the credential the session was opened with.
  */
@@ -71,7 +71,7 @@ export default function Navigation() {
     <>
       <nav data-testid="app-navigation" className="border-b border-border bg-[color:var(--color-shell)]">
         <div className="mx-auto flex h-12 max-w-[1240px] items-center gap-4 px-4 sm:px-6">
-          <Link to="/decisions" className="flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground">
+          <Link to="/" aria-label="DecisionRoom home" className="flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground">
             <span aria-hidden className="font-display grid size-6 place-items-center rounded-md bg-primary text-[13px] text-primary-foreground">D</span>
             {APP_NAME}
           </Link>
@@ -81,7 +81,7 @@ export default function Navigation() {
           <div className="flex-1" />
 
           {!isLoaded ? null : isSignedIn && !profileReady ? (
-            /* Signed in, profile still loading — skeleton pill, never the
+            /* Signed in, profile still loading, skeleton pill, never the
                Sign in button (that would offer sign-in to a signed-in user). */
             <div className="flex items-center gap-2 rounded-full border border-border bg-card/60 py-1 pl-1 pr-2.5">
               <div className="h-6 w-6 animate-pulse rounded-full bg-muted" />

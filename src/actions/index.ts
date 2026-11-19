@@ -1,5 +1,5 @@
 /**
- * DecisionRoom server actions — the only write path for decisions.
+ * DecisionRoom server actions, the only write path for decisions.
  *
  * Every action receives a VERIFIED `userId` from the action route
  * (src/server/action-routes.ts). Action tools bypass record RBAC, so each
@@ -7,9 +7,9 @@
  * before reading or writing it. Client-supplied IDs are never trusted alone.
  *
  * Integrations (all billed to the app owner, all sign-in required):
- *   exa/search                  — evidence search (explicit user action)
- *   anthropic/chat-completion   — brief drafting
- *   email/send                  — send the brief to the caller's own address
+ *   exa/search, evidence search (explicit user action)
+ *   anthropic/chat-completion, brief drafting
+ *   email/send, send the brief to the caller's own address
  */
 
 import type { ActionHandler, ActionResult, ActionTools } from 'deepspace/worker'
@@ -170,7 +170,7 @@ export const actions: Record<string, ActionHandler<Env>> = {
     return { success: true, data: { id: owned.id } }
   },
 
-  /** Web search for evidence. Results are returned, not saved — the user picks. */
+  /** Web search for evidence. Results are returned, not saved, the user picks. */
   searchEvidence: async ({ userId, params, tools }) => {
     const owned = await loadOwned(tools, userId, params.id)
     if (!owned.ok) return owned.res
@@ -248,7 +248,7 @@ export const actions: Record<string, ActionHandler<Env>> = {
       ai = null
     }
     if (!ai) {
-      // Diagnostics only — never log the model text or user content.
+      // Diagnostics only, never log the model text or user content.
       console.warn(
         `[generateBrief] unusable model output stage=${stage} stop=${body.stop_reason} ` +
           `blocks=${blocks.map((b) => b.type).join(',')} textLen=${text.length} keys=${Object.keys(res.data ?? {}).join(',')}`,

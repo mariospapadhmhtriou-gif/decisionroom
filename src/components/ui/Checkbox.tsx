@@ -14,7 +14,7 @@ interface CheckboxProps
 }
 
 /**
- * Checkbox — wraps Base UI's Checkbox. Base UI owns the controlled/uncontrolled
+ * Checkbox, wraps Base UI's Checkbox. Base UI owns the controlled/uncontrolled
  * toggle, keyboard/ARIA, and the hidden form input (rendered as a sibling, not
  * illegally nested in the button). We keep the Radix-style `checked` API that
  * accepts `'indeterminate'`, mapping it onto Base UI's separate `indeterminate`

@@ -1,5 +1,5 @@
 /**
- * Navigation Config — what appears in the top bar. Routes come from
+ * Navigation Config, what appears in the top bar. Routes come from
  * generouted file-based routing in src/pages/.
  */
 

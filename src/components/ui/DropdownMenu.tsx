@@ -119,7 +119,7 @@ function DropdownMenuLabel({
   inset,
   ...props
 }: React.ComponentProps<'div'> & { inset?: boolean }) {
-  // A plain styled label — Base UI's GroupLabel must sit inside a Menu.Group,
+  // A plain styled label, Base UI's GroupLabel must sit inside a Menu.Group,
   // but our call sites place labels standalone (Radix allowed that).
   return (
     <div

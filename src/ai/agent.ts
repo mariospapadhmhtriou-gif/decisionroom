@@ -56,7 +56,7 @@ function createAccessResolver(options: RegisterAgentOptions, resolveIdentity: ty
     const auth = await resolveIdentity(request, env)
     if (!auth) return { ok: false, status: 401 }
 
-    // Membership has exactly one definition — the caller's row in the users
+    // Membership has exactly one definition, the caller's row in the users
     // collection of the room their tools run in (the owner is always a
     // member); a signed-in app visit creates it. It is the same primitive
     // that gates the admin and realtime routes. A membership read that could
@@ -76,7 +76,7 @@ function createAccessResolver(options: RegisterAgentOptions, resolveIdentity: ty
           return { ok: false, status: 403 }
         }
       } catch {
-        // The callback failed rather than denied — fail closed but retryable.
+        // The callback failed rather than denied, fail closed but retryable.
         return { ok: false, status: 503 }
       }
     }

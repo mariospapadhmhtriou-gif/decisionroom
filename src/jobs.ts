@@ -1,5 +1,5 @@
 /**
- * Background-job handler — invoked by AppJobRoom (worker.ts) for every
+ * Background-job handler, invoked by AppJobRoom (worker.ts) for every
  * job picked up from the queue. Dispatch on `job.type` and return a
  * result (captured as `job.result`) or throw to fail (retried up to
  * `maxAttempts`, then permanently marked failed).
@@ -17,7 +17,7 @@
  *   - `ctx.progress(0..1, msg?)` publishes a real-time update over the
  *     room's WebSocket so subscribers see progress without polling.
  *   - `ctx.continue(state, { afterMs })` yields and resumes on the next
- *     alarm with `job.resumeFrom = state` — use this for work that
+ *     alarm with `job.resumeFrom = state`, use this for work that
  *     exceeds the 15-minute per-alarm wall-time ceiling.
  *   - `ctx.signal` is an AbortSignal that fires when a client cancels;
  *     forward it to `fetch` and check `.aborted` at loop suspension
@@ -46,5 +46,5 @@ export async function runJob(
   _ctx: JobContext,
   _env: unknown,
 ): Promise<void> {
-  // No-op — implement your job handlers here. Dispatch on `_job.type`.
+  // No-op, implement your job handlers here. Dispatch on `_job.type`.
 }

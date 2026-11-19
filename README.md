@@ -11,8 +11,8 @@ Uncertain choice → explicit priorities → evidence-backed comparison → insp
 
 1. Sign in (DeepSpace auth: GitHub or Google).
 2. Create a decision (blank, or the sample with **fictional** watches and **made-up** scores).
-3. Edit the question, constraints, three options, three criteria, weights (0–10) and scores (1–5).
-4. The ranking updates instantly — deterministic arithmetic, explicit ties, no ranking when all weights are 0.
+3. Edit the question, constraints, three options, three criteria, weights (0-10) and scores (1-5).
+4. The ranking updates instantly, deterministic arithmetic, explicit ties, no ranking when all weights are 0.
 5. Search the web (Exa), pick the results you trust, save them to an option, add notes, remove them.
 6. Draft a brief with AI from the **saved** decision. It cites only saved source IDs (S1, S2…). Edit it freely;
    it is marked out of date when inputs change.
@@ -22,11 +22,11 @@ Uncertain choice → explicit priorities → evidence-backed comparison → insp
 ## Scoring
 
 ```
-weighted score = Σ(score × weight) / Σ(weight)       score: integer 1–5, weight: integer 0–10
+weighted score = Σ(score × weight) / Σ(weight)       score: integer 1-5, weight: integer 0-10
 ```
 
 Higher scores are always better; a weight of 0 excludes that criterion; all-zero weights produce no ranking;
-equal totals are reported as a tie (no hidden tie-breaker). The result is a 1–5 *preference* score — not a
+equal totals are reported as a tie (no hidden tie-breaker). The result is a 1-5 *preference* score, not a
 probability, confidence level or objective rating. Code: [`src/lib/scoring.ts`](src/lib/scoring.ts).
 The AI never computes or changes scores; the brief's ranking block is inserted by the app.
 
@@ -37,7 +37,7 @@ The AI never computes or changes scores; the brief's ranking block is inserted b
 | Pure scoring (tested) | `src/lib/scoring.ts` |
 | Domain model, validation schema, brief/email composition | `src/lib/decision.ts` |
 | AI prompt (untrusted-data framing) | `src/lib/brief-prompt.ts` |
-| Server actions — the only write path | `src/actions/index.ts` |
+| Server actions, the only write path | `src/actions/index.ts` |
 | Collection schemas + permissions | `src/schemas/decisions-schema.ts` |
 | Load/save hook (debounced autosave, optimistic concurrency) | `src/lib/useDecision.ts` |
 | UI | `src/pages/(app)/(protected)/decisions/`, `src/components/decision/` |
@@ -69,7 +69,7 @@ collection with server-enforced RBAC (`read: 'own'`), realtime `useQuery` subscr
 
 AI safety: the model has no tools; user text and snippets are passed inside a JSON data block that the system
 prompt marks as untrusted; output is parsed, clamped, and citations are filtered to saved source IDs. ID
-validation is **not** proof that a source supports a claim — the brief says so. Failures keep the existing brief.
+validation is **not** proof that a source supports a claim, the brief says so. Failures keep the existing brief.
 
 Email: recipient comes from the server-side user record (not the client); the HTML body is escaped; the
 client sends a hash of the previewed text and the server refuses if the saved brief differs; identical content

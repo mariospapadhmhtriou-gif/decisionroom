@@ -18,8 +18,7 @@ const appDir = fileURLToPath(new URL('.', import.meta.url))
 // Unit tests live next to their source. The Node-only prerender test stays at
 // the root so it does not enter the browser/Worker TypeScript project in src/.
 export default defineConfig({
-  // Same app id the bundle is built with, from the same wrangler config —
-  // so a unit test importing src/constants.ts sees what the browser will.
+  // Same app id the bundle is built with, from the same wrangler config, // so a unit test importing src/constants.ts sees what the browser will.
   define: appIdDefine({ appDir }),
   resolve: {
     alias: {

@@ -30,7 +30,7 @@ export function Result({ doc, ranking }: { doc: DecisionDoc; ranking: Ranking })
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
             {ranking.tie
-              ? 'These options score the same. Add evidence or revisit your weights — the app will not pick for you.'
+              ? 'These options score the same. Add evidence or revisit your weights. The app will not pick for you.'
               : 'Highest weighted score. This reflects your scores and priorities, not a verified rating.'}
           </p>
           <ol className="mt-4 space-y-2.5">
@@ -63,7 +63,7 @@ export function Result({ doc, ranking }: { doc: DecisionDoc; ranking: Ranking })
         <summary className="cursor-pointer text-muted-foreground hover:text-foreground">How this is calculated</summary>
         <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
           For each option: sum of (score × weight) ÷ sum of weights. A weight of 0 leaves that criterion out.
-          The result is a 1–5 preference score — not a probability or an objective rating. The AI never changes it.
+          The result is a preference score from 1 to 5, not a probability or an objective rating. The AI never changes it.
         </p>
       </details>
     </section>
