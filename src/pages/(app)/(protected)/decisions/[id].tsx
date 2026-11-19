@@ -13,12 +13,14 @@ import { Result } from '@/components/decision/Result'
 import { Evidence } from '@/components/decision/Evidence'
 import { Brief } from '@/components/decision/Brief'
 import { OptionFinder } from '@/components/decision/OptionFinder'
+import { CriteriaBar, useAutoCriteria } from '@/components/decision/AutoCriteria'
 import { Chip, fieldClass } from '@/components/decision/controls'
 
 export default function DecisionPage() {
   const { id = '' } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { doc, status, error, savedAt, update, flush, retry, resolveConflict } = useDecision(id)
+  const { doc, status, error, savedAt, update, flush, retry, resolveConflict, docRef } = useDecision(id)
+  const autoCriteria = useAutoCriteria(id, doc, docRef, update, flush)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -137,7 +139,7 @@ export default function DecisionPage() {
       </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <Comparison doc={doc} ranking={ranking} update={update} />
+        <Comparison doc={doc} ranking={ranking} update={update} criteriaBar={<CriteriaBar doc={doc} {...autoCriteria} />} />
         <div className="lg:sticky lg:top-4 lg:self-start">
           <Result doc={doc} ranking={ranking} />
         </div>

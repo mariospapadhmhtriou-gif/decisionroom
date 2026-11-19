@@ -57,6 +57,7 @@ test('a second user cannot read, change or use another user’s decision', async
     ['saveDecision', { id: alice.id, baseRevision: 2, doc: { question: 'hijacked' } }],
     ['generateBrief', { id: alice.id }],
     ['suggestOptions', { id: alice.id }],
+    ['suggestCriteria', { id: alice.id }],
     ['searchEvidence', { id: alice.id, query: 'anything' }],
     ['emailBrief', { id: alice.id }],
     ['deleteDecision', { id: alice.id }],

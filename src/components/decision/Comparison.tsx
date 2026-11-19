@@ -4,6 +4,7 @@
  * Desktop: a table. Narrow screens: priorities list + one card per option.
  */
 
+import type { ReactNode } from 'react'
 import { LIMITS, criterionLabel, formatScore, optionLabel, type DecisionDoc } from '@/lib/decision'
 import type { Ranking } from '@/lib/scoring'
 import { weightShares } from '@/lib/scoring'
@@ -18,6 +19,7 @@ const setOptionName = (i: number, name: string) => (d: DecisionDoc) => ({
 })
 const setCriterion = (j: number, patch: Partial<DecisionDoc['criteria'][number]>) => (d: DecisionDoc) => ({
   ...d,
+  criteriaFrom: null,
   criteria: d.criteria.map((c, k) => (k === j ? { ...c, ...patch } : c)),
 })
 const setScore = (i: number, j: number, n: number) => (d: DecisionDoc) => ({
@@ -30,7 +32,17 @@ const setScore = (i: number, j: number, n: number) => (d: DecisionDoc) => ({
 const nameInput =
   'w-full min-w-0 rounded-md border border-transparent bg-transparent px-2 py-1.5 text-sm font-semibold text-foreground hover:border-input focus:border-input focus:bg-background/60'
 
-export function Comparison({ doc, ranking, update }: { doc: DecisionDoc; ranking: Ranking; update: Update }) {
+export function Comparison({
+  doc,
+  ranking,
+  update,
+  criteriaBar,
+}: {
+  doc: DecisionDoc
+  ranking: Ranking
+  update: Update
+  criteriaBar?: ReactNode
+}) {
   const shares = weightShares(doc.criteria)
   const isLeader = (i: number) => ranking.valid && ranking.leaders.includes(i)
   const rankOf = (i: number) => (ranking.valid ? ranking.order.indexOf(i) + 1 : null)
@@ -41,6 +53,7 @@ export function Comparison({ doc, ranking, update }: { doc: DecisionDoc; ranking
       title="Comparison"
       description="Score each option 1 (weak) to 5 (strong). Weights set how much each criterion counts."
     >
+      {criteriaBar}
       {/* Desktop table */}
       <div className="hidden md:block">
         <table className="w-full table-fixed border-collapse text-sm">

@@ -33,6 +33,7 @@ export function Evidence({ id, doc, update }: { id: string; doc: DecisionDoc; up
   const [error, setError] = useState<string | null>(null)
   const [results, setResults] = useState<SearchResult[] | null>(null)
   const [lastQuery, setLastQuery] = useState('')
+  const [open, setOpen] = useState(false)
 
   const full = doc.evidence.length >= LIMITS.evidence
   const savedUrls = new Set(doc.evidence.map((e) => `${e.optionIndex}|${e.url}`))
@@ -76,10 +77,17 @@ export function Evidence({ id, doc, update }: { id: string; doc: DecisionDoc; up
   return (
     <Panel
       id="evidence"
-      title="Evidence"
-      description="Search the web, then save the results you trust to an option. Snippets are excerpts from search results, not verified sources."
+      title="Your own research (optional)"
+      description="Want to dig deeper? Search the web yourself and save sources to an option. Sources the AI used appear here too. Snippets are excerpts from search results, not verified sources."
       actions={<Chip>{doc.evidence.length}/{LIMITS.evidence} saved</Chip>}
     >
+      {!open && (
+        <Button type="button" variant="outline" onClick={() => setOpen(true)}>
+          <Search aria-hidden />
+          Search the web yourself
+        </Button>
+      )}
+      {open && (
       <form onSubmit={onSearch} className="grid gap-2 sm:grid-cols-[1fr_auto_auto]" role="search">
         <label className="sr-only" htmlFor="evidence-query">Search query</label>
         <input
@@ -108,6 +116,7 @@ export function Evidence({ id, doc, update }: { id: string; doc: DecisionDoc; up
           {searching ? 'Searching…' : 'Search'}
         </Button>
       </form>
+      )}
 
       {error && (
         <p role="alert" className="mt-3 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -169,6 +178,7 @@ export function Evidence({ id, doc, update }: { id: string; doc: DecisionDoc; up
         </div>
       )}
 
+      {(doc.evidence.length > 0 || open) && (
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         {doc.options.map((_, i) => {
           const items = doc.evidence.filter((e) => e.optionIndex === i)
@@ -180,7 +190,7 @@ export function Evidence({ id, doc, update }: { id: string; doc: DecisionDoc; up
               </h3>
               {items.length === 0 ? (
                 <p className="rounded-lg border border-dashed border-border px-3 py-4 text-[13px] text-muted-foreground">
-                  No evidence saved yet.
+                  No sources yet.
                 </p>
               ) : (
                 <ul className="space-y-3">
@@ -234,6 +244,7 @@ export function Evidence({ id, doc, update }: { id: string; doc: DecisionDoc; up
           )
         })}
       </div>
+      )}
     </Panel>
   )
 }

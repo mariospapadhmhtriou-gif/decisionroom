@@ -74,7 +74,7 @@ export function OptionFinder({
     <Panel
       id="finder"
       title="Find options with AI"
-      description="Describe what you need: your question, your budget and limits under Constraints, and how much each criterion matters. AI searches the web and suggests three options with starting scores."
+      description="Write your question and your budget or limits. The criteria and weights below fill in from that automatically, and you can change them. Then AI searches the web and suggests three options with starting scores."
       actions={doc.aiSuggestedAt ? <Chip tone="gold">Current options came from AI</Chip> : undefined}
     >
       <div className="flex flex-wrap items-center gap-3">

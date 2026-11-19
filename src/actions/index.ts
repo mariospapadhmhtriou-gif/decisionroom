@@ -45,6 +45,7 @@ import {
   normalizeSuggestion,
   type SearchHit,
 } from '../lib/suggest'
+import { CRITERIA_SYSTEM_PROMPT, MIN_QUESTION_FOR_CRITERIA, buildCriteriaUserMessage, normalizeCriteria, promptKey } from '../lib/criteria'
 
 type Result = ActionResult<unknown>
 const fail = (error: string, code?: string): Result => ({ success: false, error, code })
@@ -54,6 +55,7 @@ const RATE_LIMITS = {
   search: { max: 30, windowMs: 60 * 60 * 1000, label: '30 searches per hour' },
   brief: { max: 10, windowMs: 60 * 60 * 1000, label: '10 brief generations per hour' },
   suggest: { max: 10, windowMs: 60 * 60 * 1000, label: '10 option searches per hour' },
+  criteria: { max: 40, windowMs: 60 * 60 * 1000, label: '40 criteria suggestions per hour' },
   email: { max: 5, windowMs: 24 * 60 * 60 * 1000, label: '5 emails per day' },
 } as const
 const EMAIL_DUPLICATE_WINDOW_MS = 10 * 60 * 1000
@@ -178,6 +180,45 @@ export const actions: Record<string, ActionHandler<Env>> = {
     const removed = await tools.remove('decisions', owned.id)
     if (!removed.success) return fail('Could not delete the decision.')
     return { success: true, data: { id: owned.id } }
+  },
+
+  /**
+   * Suggest three criteria and weights from the SAVED question and constraints.
+   * Returns them with the prompt fingerprint they were based on; the client
+   * applies them only if the question has not changed and the user has not
+   * edited criteria in the meantime.
+   */
+  suggestCriteria: async ({ userId, params, tools }) => {
+    const owned = await loadOwned(tools, userId, params.id)
+    if (!owned.ok) return owned.res
+    const doc = owned.doc
+    if (doc.question.trim().length < MIN_QUESTION_FOR_CRITERIA) return fail('Write a little more of your question first.', 'invalid')
+    const limited = await checkRate(tools, userId, 'criteria')
+    if (limited) return limited
+    const res = await tools.integration<Record<string, unknown>>('anthropic/chat-completion', {
+      model: BRIEF_MODEL,
+      max_tokens: 3000,
+      temperature: 0.2,
+      system: CRITERIA_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildCriteriaUserMessage(doc) }],
+    })
+    await logEvent(tools, userId, 'criteria', owned.id)
+    if (!res.success) {
+      return fail(res.code === 'insufficient_credits' ? 'AI is unavailable: the app is out of credits.' : `AI request failed: ${res.error}`, res.code)
+    }
+    const body = res.data as { content?: Array<{ type?: string; text?: string }>; stop_reason?: string }
+    const text = (Array.isArray(body.content) ? body.content : []).filter((c) => c.type === 'text').map((c) => c.text ?? '').join('')
+    let criteria = null
+    try {
+      criteria = normalizeCriteria(extractJsonObject(text))
+    } catch {
+      criteria = null
+    }
+    if (!criteria) {
+      console.warn(`[suggestCriteria] unusable model output stop=${body.stop_reason} textLen=${text.length}`)
+      return fail('The AI could not suggest criteria this time. Your criteria were not changed.', 'bad_output')
+    }
+    return { success: true, data: { criteria, key: promptKey(doc) } }
   },
 
   /**
