@@ -8,9 +8,9 @@ import { Seo } from '../components/Seo'
 import { seo } from '../seo'
 
 const steps = [
-  ['Make priorities explicit', 'Three options, three criteria, weights from 0 to 10, scores from 1 to 5.'],
-  ['See a ranking you can check', 'A plain weighted average. Ties stay ties, and nothing is hidden.'],
-  ['Save evidence you chose', 'Search the web, keep the results you trust, attach them to an option.'],
+  ['Describe what you need', 'Your question, your budget and limits, and how much each criterion matters (0 to 10).'],
+  ['Let AI find options', 'AI searches the web and suggests three options with starting scores and sources. You review before anything changes.'],
+  ['See a ranking you can check', 'A plain weighted average of scores from 1 to 5. Ties stay ties, and you can change any score.'],
   ['Get an editable brief', 'AI drafts the reasoning from your saved inputs and cites only your sources. Email it to yourself.'],
 ]
 
@@ -25,7 +25,7 @@ export default function Landing() {
               <span aria-hidden className="font-display grid size-6 place-items-center rounded-md bg-primary text-[13px] text-primary-foreground">D</span>
               DecisionRoom
             </Link>
-            <Link to="/decisions" className="text-sm text-muted-foreground hover:text-foreground">Sign in</Link>
+            <Link to="/decisions" className="text-sm text-muted-foreground hover:text-foreground">Open app</Link>
           </div>
         </header>
         <main className="mx-auto max-w-5xl px-4 py-14 sm:px-6 sm:py-20">
@@ -34,8 +34,8 @@ export default function Landing() {
             Turn an uncertain choice into a brief you can explain.
           </h1>
           <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
-            Compare options against priorities you set, keep the evidence you found, and get a draft brief that shows its
-            working. The ranking is arithmetic you control, not an AI verdict.
+            Tell it your budget and what matters most. AI finds candidate options on the web and suggests starting scores;
+            you review them, and the ranking is arithmetic you control, not an AI verdict.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link

@@ -1,7 +1,8 @@
 # DecisionRoom
 
-A focused decision workspace: compare three options against priorities you weight yourself, save web
-evidence to specific options, and get an editable, source-cited decision brief you can email to yourself.
+A focused decision workspace: describe your question, budget and priorities, let AI find three candidate options
+on the web with starting scores, check the ranking, keep the evidence, and get an editable, source-cited decision
+brief you can email to yourself.
 
 **Live:** https://decision-room.app.space · built on [DeepSpace](https://docs.deep.space/) (SDK 0.44.2)
 
@@ -11,13 +12,18 @@ Uncertain choice → explicit priorities → evidence-backed comparison → insp
 
 1. Sign in (DeepSpace auth: GitHub or Google).
 2. Create a decision (blank, or the sample with **fictional** watches and **made-up** scores).
-3. Edit the question, constraints, three options, three criteria, weights (0-10) and scores (1-5).
-4. The ranking updates instantly, deterministic arithmetic, explicit ties, no ranking when all weights are 0.
-5. Search the web (Exa), pick the results you trust, save them to an option, add notes, remove them.
-6. Draft a brief with AI from the **saved** decision. It cites only saved source IDs (S1, S2…). Edit it freely;
+3. Write the question and constraints (for example a budget), name three criteria and set their weights (0-10).
+4. Optional: **Find options with AI.** The server searches the web from the saved question and constraints, and
+   AI proposes three real options with a 1-5 score and a reason per criterion, citing search results. You see
+   how they would rank under your weights, then choose **Use these options** or **Discard**. Accepting replaces
+   the options, scores and evidence; question, constraints and weights stay. Scores remain editable.
+5. Or enter options and scores yourself. The ranking updates instantly: deterministic arithmetic, explicit ties,
+   and no ranking when all weights are 0.
+6. Search the web (Exa), pick the results you trust, save them to an option, add notes, remove them.
+7. Draft a brief with AI from the **saved** decision. It cites only saved source IDs (S1, S2…). Edit it freely;
    it is marked out of date when inputs change.
-7. Preview the exact email, then explicitly send it to your own sign-in address.
-8. Everything autosaves to your private record; reload or come back later.
+8. Preview the exact email, then explicitly send it to your own sign-in address.
+9. Everything autosaves to your private record; reload or come back later.
 
 ## Scoring
 
@@ -28,7 +34,8 @@ weighted score = Σ(score × weight) / Σ(weight)       score: integer 1-5, weig
 Higher scores are always better; a weight of 0 excludes that criterion; all-zero weights produce no ranking;
 equal totals are reported as a tie (no hidden tie-breaker). The result is a 1-5 *preference* score, not a
 probability, confidence level or objective rating. Code: [`src/lib/scoring.ts`](src/lib/scoring.ts).
-The AI never computes or changes scores; the brief's ranking block is inserted by the app.
+AI can *suggest* starting scores when you ask (and only after you accept them), but it never computes the ranking
+or changes scores on its own; the brief's ranking block is inserted by the app.
 
 ## How it is built
 
@@ -36,8 +43,9 @@ The AI never computes or changes scores; the brief's ranking block is inserted b
 |---|---|
 | Pure scoring (tested) | `src/lib/scoring.ts` |
 | Domain model, validation schema, brief/email composition | `src/lib/decision.ts` |
-| AI prompt (untrusted-data framing) | `src/lib/brief-prompt.ts` |
-| Server actions, the only write path | `src/actions/index.ts` |
+| AI prompts (untrusted-data framing) | `src/lib/brief-prompt.ts`, `src/lib/suggest.ts` |
+| AI option finder: query, output clamping, apply (tested) | `src/lib/suggest.ts` |
+| Server actions (the only write path) | `src/actions/index.ts` |
 | Collection schemas + permissions | `src/schemas/decisions-schema.ts` |
 | Load/save hook (debounced autosave, optimistic concurrency) | `src/lib/useDecision.ts` |
 | UI | `src/pages/(app)/(protected)/decisions/`, `src/components/decision/` |
@@ -56,20 +64,20 @@ collection with server-enforced RBAC (`read: 'own'`), realtime `useQuery` subscr
   (3) re-validates the entire document with zod (score/weight ranges, text limits, http(s)-only URLs, unique IDs).
 - Saves use optimistic concurrency: a save with a stale `baseRevision` is refused with `conflict` and the UI
   asks which version to keep. Nothing is silently overwritten.
-- `usage_events` (server-only) backs per-user limits: 30 searches/hour, 10 briefs/hour, 5 emails/day, and
+- `usage_events` (server-only) backs per-user limits: 30 searches/hour, 10 option searches/hour, 10 briefs/hour, 5 emails/day, and
   duplicate-email protection.
 
 ### Integrations (all called server-side, sign-in required)
 
 | Integration | Endpoint | Used for |
 |---|---|---|
-| Exa web search | `exa/search` | Evidence search on explicit user action; 6 results, query ≤ 200 chars |
-| Anthropic | `anthropic/chat-completion` (`claude-haiku-5-5`) | Drafting the brief's prose as JSON |
+| Exa web search | `exa/search` | Evidence search (6 results) and the option finder (8 results); query ≤ 200 chars |
+| Anthropic | `anthropic/chat-completion` (`claude-haiku-5-5`) | Suggesting options and scores; drafting the brief's prose as JSON |
 | Email (Resend via DeepSpace) | `email/send` | Sending the saved brief to the caller's own address |
 
 AI safety: the model has no tools; user text and snippets are passed inside a JSON data block that the system
 prompt marks as untrusted; output is parsed, clamped, and citations are filtered to saved source IDs. ID
-validation is **not** proof that a source supports a claim, the brief says so. Failures keep the existing brief.
+validation is **not** proof that a source supports a claim, and the brief says so. Failures keep the existing brief.
 
 Email: recipient comes from the server-side user record (not the client); the HTML body is escaped; the
 client sends a hash of the previewed text and the server refuses if the saved brief differs; identical content
