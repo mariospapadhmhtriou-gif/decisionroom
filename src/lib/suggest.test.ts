@@ -67,3 +67,15 @@ describe('noDashes', () => {
     expect(out).not.toMatch(/[\u2013\u2014]|--/)
   })
 })
+
+describe('result-ID cleanup', () => {
+  it('removes internal result IDs from AI text', () => {
+    const s = normalizeSuggestion(
+      { options: ['A', 'B', 'C'].map((n) => ({ name: n, summary: 'Good (R1).', scores: [3, 3, 3], reasons: ['Battery 50 hours (R5, R8) or more.'] })) },
+      hits,
+      'q',
+    )!
+    expect(s.options[0].summary).toBe('Good.')
+    expect(s.options[0].reasons[0]).toBe('Battery 50 hours or more.')
+  })
+})

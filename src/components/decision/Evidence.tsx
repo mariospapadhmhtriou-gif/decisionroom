@@ -9,6 +9,7 @@ import { callAction } from '@/lib/api'
 import {
   LIMITS,
   nextEvidenceId,
+  noDashes,
   optionLabel,
   type DecisionDoc,
   type Evidence as EvidenceItem,
@@ -147,7 +148,7 @@ export function Evidence({ id, doc, update }: { id: string; doc: DecisionDoc; up
                         {hostOf(r.url)}
                         {r.publishedDate && ` · ${r.publishedDate}`}
                       </p>
-                      {r.snippet && <p className="mt-1 line-clamp-3 text-[13px] leading-relaxed text-muted-foreground">{r.snippet}</p>}
+                      {r.snippet && <p className="mt-1 line-clamp-3 text-[13px] leading-relaxed text-muted-foreground">{noDashes(r.snippet)}</p>}
                     </div>
                     <Button
                       type="button"
@@ -210,7 +211,7 @@ export function Evidence({ id, doc, update }: { id: string; doc: DecisionDoc; up
                       </div>
                       {e.snippet && (
                         <p className="mt-2 line-clamp-4 border-l-2 border-border pl-2 text-xs leading-relaxed text-muted-foreground">
-                          {e.snippet}
+                          {noDashes(e.snippet)}
                         </p>
                       )}
                       <label className="mt-2 block text-xs text-muted-foreground" htmlFor={`note-${e.id}`}>

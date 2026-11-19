@@ -18,6 +18,7 @@ import type { Env } from '../../worker'
 import {
   LIMITS,
   normalizeAiBrief,
+  noDashes,
   blankDecision,
   composeBriefText,
   composeEmail,
@@ -104,7 +105,7 @@ function logEvent(tools: ActionTools, userId: string, kind: string, detail = '')
 /** Search highlights arrive as markdown fragments; keep plain prose. */
 function plainSnippet(value: unknown): string {
   if (typeof value !== 'string') return ''
-  return value
+  return noDashes(value)
     .replace(/^\s*\.{3}\s*$/gm, ' ')
     .replace(/^#{1,6}\s*/gm, '')
     .replace(/#{2,6}\s*/g, '')

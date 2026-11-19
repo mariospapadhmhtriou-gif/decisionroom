@@ -59,7 +59,7 @@ Rules:
 - Prefer options mentioned in the search results. Do not invent products, prices or specifications.
 - Exclude options that clearly break a stated constraint (such as being over budget).
 - For each option give an integer score from 1 (weak) to 5 (strong) for each criterion, in the given criterion order, and a short reason for each score. If the results say nothing about a criterion, use 3 and say the evidence is missing.
-- Cite only search result IDs from the data block in "sourceIds" (1 to 3 per option).
+- Cite only search result IDs from the data block in "sourceIds" (1 to 3 per option). Never mention result IDs inside summaries, reasons or notes.
 - Never use em dashes, en dashes or double hyphens.
 
 Respond with ONLY a JSON object:
@@ -81,7 +81,10 @@ const clampScore = (v: unknown) => {
   const n = Math.round(Number(v))
   return Number.isFinite(n) ? Math.min(5, Math.max(1, n)) : 3
 }
-const text = (v: unknown, max: number) => (typeof v === 'string' ? noDashes(v).replace(/\s+/g, ' ').trim().slice(0, max) : '')
+/** Drop internal result-ID mentions such as "(R5, R8)" that mean nothing to users. */
+const stripResultIds = (s: string) => s.replace(/\s*\((?:\s*R\d+\s*(?:,|and)?)+\)/g, '').replace(/\b(?:see|per|from)\s+R\d+\b/gi, '')
+const text = (v: unknown, max: number) =>
+  typeof v === 'string' ? stripResultIds(noDashes(v)).replace(/\s+/g, ' ').trim().slice(0, max) : ''
 
 /**
  * Validate and clamp model output. Returns null unless there are exactly
