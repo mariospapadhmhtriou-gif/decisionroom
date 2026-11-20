@@ -101,7 +101,7 @@ export function ScoresBar({
   if (working) message = 'Scoring your options…'
   else if (error) message = error
   else if (!ready) message = 'Name your three options and AI will score them automatically.'
-  else if (!manual && current) message = 'Scores were estimated by AI from general knowledge, not live research. Change any score; your edits are kept.'
+  else if (!manual && current) message = 'Scores were estimated by AI from general knowledge, not live research. Change any score and your edits will be kept.'
   else if (!manual) message = 'Scores will update in a moment.'
   else if (outOfDate) message = 'Your options or criteria changed since these scores were set.'
   else message = 'Scores set by you.'

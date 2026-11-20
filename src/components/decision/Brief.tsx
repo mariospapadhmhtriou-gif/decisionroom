@@ -98,7 +98,7 @@ export function Brief({
     <Panel
       id="brief"
       title="Decision brief"
-      description="AI drafts the prose from your saved inputs and evidence; the ranking is inserted by the app. Edit freely."
+      description="AI drafts the prose from your saved inputs and evidence, and the app adds the ranking itself. Edit it freely."
       actions={status}
     >
       <div className="flex flex-wrap items-center gap-2">

@@ -324,7 +324,7 @@ export const actions: Record<string, ActionHandler<Env>> = {
     }
     if (!suggestion) {
       console.warn(`[suggestOptions] unusable model output stop=${body.stop_reason} textLen=${text.length}`)
-      return fail('The AI could not produce three usable options. Nothing was changed; try again or adjust your constraints.', 'bad_output')
+      return fail('The AI could not produce three usable options. Nothing was changed. Try again or adjust your constraints.', 'bad_output')
     }
     return { success: true, data: { suggestion } }
   },
@@ -414,8 +414,8 @@ export const actions: Record<string, ActionHandler<Env>> = {
       )
       return fail(
         body.stop_reason === 'max_tokens'
-          ? 'The AI response was cut off before it finished. Your existing brief was kept; try again.'
-          : 'The AI response was not in the expected format. Your existing brief was kept; try again.',
+          ? 'The AI response was cut off before it finished. Your existing brief was kept. Please try again.'
+          : 'The AI response was not in the expected format. Your existing brief was kept. Please try again.',
         'bad_output',
       )
     }

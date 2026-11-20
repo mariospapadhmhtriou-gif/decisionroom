@@ -340,7 +340,8 @@ export function composeBriefText(
     bullets(ai.openQuestions, 'None noted.'),
     '',
     '',
-    'Scores and weights were entered by the user; the ranking is arithmetic, not a probability. ' +
+    'Criteria, weights and scores may have been suggested by AI and can be changed by the user. ' +
+      'The ranking is plain arithmetic, not a probability. ' +
       'The prose sections were drafted by AI from the saved inputs. Source IDs were checked against ' +
       'saved sources, which does not prove a source supports the point, so open the links.' +
       (dropped > 0 ? ` ${dropped} reference(s) to unknown source IDs were removed.` : ''),
